@@ -319,81 +319,81 @@ imprime_inicio2:
 	jsr imprime_cadena
 	bra lp_carga2
 ;Palabra 3
-lpi:
+lpi3:
 	bra imprime_inicio
-lp_carga:
+lp_carga3:
 	ldy #palabra_s
-	ldx #palabra1
-logica_principal:
+	ldx #palabra3
+logica_principal3:
 	lda ,x+
 	cmpa #'\0
-	beq lp_fin
+	beq lp_fin3
 	cmpa ,y+	
-	beq lp_bien
-	bne lp_comp
-lp_bien:
+	beq lp_bien3
+	bne lp_comp3
+lp_bien3:
 	jsr imprime_cadena
 	sta pantalla
-lp_comp:
+lp_comp3:
 	cmpa ,y+
-	beq lp_estan
+	beq lp_estan3
 	cmpy #'\0
-	beq lp_mal
-	bra lp_comp
-lp_estan:
+	beq lp_mal3
+	bra lp_comp3
+lp_estan3:
 	ldx #'?
 	jsr imprime_cadena
-	bra lp_carga
-lp_mal:
+	bra lp_carga3
+lp_mal3:
 	lda #espacio
 	sta pantalla
-	bra lp_carga 
-lp_fin:
+	bra lp_carga3 
+lp_fin3:
 	rts
-imprime_inicio:
-	lda #1
+imprime_inicio3:
+	lda #3
 	sta pantalla
 	ldx #barra
 	jsr imprime_cadena
-	bra lp_carga
-;Palabra 1
-lpi:
-	bra imprime_inicio
-lp_carga:
+	bra lp_carga3
+;Palabra 4
+lpi4:
+	bra imprime_inicio4
+lp_carga4:
 	ldy #palabra_s
-	ldx #palabra1
-logica_principal:
+	ldx #palabra4
+logica_principal4:
 	lda ,x+
 	cmpa #'\0
-	beq lp_fin
+	beq lp_fin4
 	cmpa ,y+	
-	beq lp_bien
-	bne lp_comp
-lp_bien:
+	beq lp_bien4
+	bne lp_comp4
+lp_bien4:
 	jsr imprime_cadena
 	sta pantalla
-lp_comp:
+lp_comp4:
 	cmpa ,y+
-	beq lp_estan
+	beq lp_estan4
 	cmpy #'\0
-	beq lp_mal
-	bra lp_comp
-lp_estan:
+	beq lp_mal4
+	bra lp_comp4
+lp_estan4:
 	ldx #'?
 	jsr imprime_cadena
-	bra lp_carga
-lp_mal:
+	bra lp_carga4
+lp_mal4:
 	lda #espacio
 	sta pantalla
-	bra lp_carga 
-lp_fin:
+	bra lp_carga4
+lp_fin4:
 	rts
-imprime_inicio:
-	lda #1
+imprime_inicio4:
+	lda #4
 	sta pantalla
 	ldx #barra
 	jsr imprime_cadena
-	bra lp_carga
+	bra lp_carga4
 ;Palabra 5
 lpi5:
 	bra imprime_inicio5
