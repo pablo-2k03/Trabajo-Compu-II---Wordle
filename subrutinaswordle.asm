@@ -14,16 +14,13 @@ booleano:	.byte 0
 espacio: 	.asciz " "
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;Variables para guardar cada intento de la palabra
-palabra1:  	.asciz "MOSCA"
-palabra1_c:	.asciz "     "
-palabra2:  	.asciz "PULPO"
-palabra2_c:	.asciz "     "
+palabra1:  	.asciz "     "
+palabra2:  	.asciz "     "
 palabra3:  	.asciz "     "
-palabra3_c:	.asciz "     "
 palabra4:  	.asciz "     "
-palabra3_c:	.asciz "     "
 palabra5:  	.asciz "     "
-palabra5_c:	.asciz "     "
+palabra6: 	.asciz "     "
+barra: 	.asciz " | "
 ;;;;;;;;;;;;;;;;;;;;;;;;;    Variables Globales ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	.globl imprime_cadena
 	.globl contador
@@ -246,23 +243,230 @@ comprueba_final_m:
 ;		0-Verde 1-Amarillo 2-Rojo 3-Blanco				;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;Palabra 1
+lpi:
+	bra imprime_inicio
 lp_carga:
 	ldy #palabra_s
-	ldx #palabra
+	ldx #palabra1
 logica_principal:
 	lda ,x+
 	cmpa #'\0
 	beq lp_fin
 	cmpa ,y+	
 	beq lp_bien
-	bne lp_comp_color
+	bne lp_comp
 lp_bien:
 	jsr imprime_cadena
+	sta pantalla
 lp_comp:
 	cmpa ,y+
 	beq lp_estan
 	cmpy #'\0
 	beq lp_mal
-	bra lp_comp 
+	bra lp_comp
+lp_estan:
+	ldx #'?
+	jsr imprime_cadena
+	bra lp_carga
+lp_mal:
+	lda #espacio
+	sta pantalla
+	bra lp_carga 
 lp_fin:
 	rts
+imprime_inicio:
+	lda #1
+	sta pantalla
+	ldx #barra
+	jsr imprime_cadena
+	bra lp_carga
+;Palabra 2
+lpi2:
+	bra imprime_inicio
+lp_carga2:
+	ldy #palabra_s
+	ldx #palabra2
+logica_principal2:
+	lda ,x+
+	cmpa #'\0
+	beq lp_fin2
+	cmpa ,y+	
+	beq lp_bien2
+	bne lp_comp2
+lp_bien2:
+	jsr imprime_cadena
+	sta pantalla
+lp_comp2:
+	cmpa ,y+
+	beq lp_estan2
+	cmpy #'\0
+	beq lp_mal2
+	bra lp_comp2
+lp_estan2:
+	ldx #'?
+	jsr imprime_cadena
+	bra lp_carga2
+lp_mal2:
+	lda #espacio
+	sta pantalla
+	bra lp_carga2 
+lp_fin2:
+	rts
+imprime_inicio2:
+	lda #2
+	sta pantalla
+	ldx #barra
+	jsr imprime_cadena
+	bra lp_carga2
+;Palabra 3
+lpi:
+	bra imprime_inicio
+lp_carga:
+	ldy #palabra_s
+	ldx #palabra1
+logica_principal:
+	lda ,x+
+	cmpa #'\0
+	beq lp_fin
+	cmpa ,y+	
+	beq lp_bien
+	bne lp_comp
+lp_bien:
+	jsr imprime_cadena
+	sta pantalla
+lp_comp:
+	cmpa ,y+
+	beq lp_estan
+	cmpy #'\0
+	beq lp_mal
+	bra lp_comp
+lp_estan:
+	ldx #'?
+	jsr imprime_cadena
+	bra lp_carga
+lp_mal:
+	lda #espacio
+	sta pantalla
+	bra lp_carga 
+lp_fin:
+	rts
+imprime_inicio:
+	lda #1
+	sta pantalla
+	ldx #barra
+	jsr imprime_cadena
+	bra lp_carga
+;Palabra 1
+lpi:
+	bra imprime_inicio
+lp_carga:
+	ldy #palabra_s
+	ldx #palabra1
+logica_principal:
+	lda ,x+
+	cmpa #'\0
+	beq lp_fin
+	cmpa ,y+	
+	beq lp_bien
+	bne lp_comp
+lp_bien:
+	jsr imprime_cadena
+	sta pantalla
+lp_comp:
+	cmpa ,y+
+	beq lp_estan
+	cmpy #'\0
+	beq lp_mal
+	bra lp_comp
+lp_estan:
+	ldx #'?
+	jsr imprime_cadena
+	bra lp_carga
+lp_mal:
+	lda #espacio
+	sta pantalla
+	bra lp_carga 
+lp_fin:
+	rts
+imprime_inicio:
+	lda #1
+	sta pantalla
+	ldx #barra
+	jsr imprime_cadena
+	bra lp_carga
+;Palabra 5
+lpi5:
+	bra imprime_inicio5
+lp_carga5:
+	ldy #palabra_s
+	ldx #palabra5
+logica_principal5:
+	lda ,x+
+	cmpa #'\0
+	beq lp_fin5
+	cmpa ,y+	
+	beq lp_bien5
+	bne lp_comp5
+lp_bien5:
+	jsr imprime_cadena
+	sta pantalla
+lp_comp5:
+	cmpa ,y+
+	beq lp_estan5
+	cmpy #'\0
+	beq lp_mal5
+	bra lp_comp5
+lp_estan5:
+	ldx #'?
+	jsr imprime_cadena
+	bra lp_carga5
+lp_mal5:
+	lda #espacio
+	sta pantalla
+	bra lp_carga5 
+lp_fin5:
+	rts
+imprime_inicio5:
+	lda #5
+	sta pantalla
+	ldx #barra
+	jsr imprime_cadena
+	bra lp_carga5
+;Palabra 6
+lpi6:
+	bra imprime_inicio
+lp_carga6:
+	ldy #palabra_s
+	ldx #palabra6
+logica_principal6:
+	lda ,x+
+	cmpa #'\0
+	beq lp_fin6
+	cmpa ,y+	
+	beq lp_bien6
+	bne lp_comp6
+lp_bien6:
+	jsr imprime_cadena
+	sta pantalla
+lp_comp6:
+	cmpa ,y+
+	beq lp_estan6
+	cmpy #'\0
+	beq lp_mal6
+	bra lp_comp6
+lp_estan6:
+	ldx #'?
+	jsr imprime_cadena
+	bra lp_carga6
+lp_mal6:
+	lda #espacio
+	sta pantalla
+	bra lp_carga6 
+lp_fin6:
+	rts
+imprime_inicio6:
+	lda #6
+	sta pantalla
+	ldx #barra
+	jsr imprime_cadena
+	bra lp_carga6
