@@ -41,14 +41,13 @@ err:
 			.globl lee_cadena_n
 			.globl presentar_diccionario
 			.globl comprueba
-			.globl pedir_palabra
-			.globl imprime_filas
-			.globl lp_carga
-			.globl lp_carga2
-			.globl lp_carga3
-			.globl lp_carga4
-			.globl lp_carga5
-			.globl lp_carga6
+			.globl pedir_palabras
+			.globl lpi
+			.globl lpi2
+			.globl lpi3
+			.globl lpi4
+			.globl lpi5
+			.globl lpi6
 wordle:
 	lds #ps
 	ldu #pu
@@ -88,22 +87,22 @@ pedir_palabra:
 	lda #6	;Numero maximo de caracteres q pueden introducir(n-1)
 	jsr lee_cadena_n
 	jsr comprueba
-	jsr lp_carga
+	jsr lpi
 	jsr lee_cadena_n
 	jsr comprueba
-	jsr lp_carga2
+	jsr lpi2
 	jsr lee_cadena_n
 	jsr comprueba
-	jsr lp_carga3
+	jsr lpi3
 	jsr lee_cadena_n
 	jsr comprueba
-	jsr lp_carga4
+	jsr lpi4
 	jsr lee_cadena_n
 	jsr comprueba
-	jsr lp_carga5
+	jsr lpi5
 	jsr lee_cadena_n
 	jsr comprueba
-	jsr lp_carga6
+	jsr lpi6
 acabar:
 	clra
 	sta fin

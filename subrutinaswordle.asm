@@ -31,13 +31,12 @@ barra: 	.asciz " | "
 	.globl salir_bucle
 	.globl comprueba
 	.globl pedir_palabra
-	.globl imprime_filas
-	.globl lp_carga
-	.globl lp_carga2
-	.globl lp_carga3
-	.globl lp_carga4
-	.globl lp_carga5
-	.globl lp_carga6
+	.globl lpi
+	.globl lpi2
+	.globl lpi3
+	.globl lpi4
+	.globl lpi5
+	.globl lpi6
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;	Subrutina: Imprime cadena						  ;
 ;	Funcionamiento: Imprime una cadena leida por teclado o ya establecida. ;  
@@ -434,7 +433,7 @@ imprime_inicio5:
 	bra lp_carga5
 ;Palabra 6
 lpi6:
-	bra imprime_inicio
+	bra imprime_inicio6
 lp_carga6:
 	ldy #palabra_s
 	ldx #palabra6
