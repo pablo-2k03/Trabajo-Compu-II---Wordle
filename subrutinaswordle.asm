@@ -320,7 +320,7 @@ imprime_inicio2:
 	bra lp_carga2
 ;Palabra 3
 lpi3:
-	bra imprime_inicio
+	bra imprime_inicio3
 lp_carga3:
 	ldy #palabra_s
 	ldx #palabra3
