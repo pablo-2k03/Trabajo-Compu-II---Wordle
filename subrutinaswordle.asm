@@ -11,14 +11,14 @@ palabra: 	.asciz '     '
 palabra_s: 	.asciz "MOSCA"	
 palabra_mal:	.asciz "\nLa palabra NO esta en el diccionario.\n"
 palabra_bien:   .asciz "\nLa palabra esta en el diccionario.\n"
-booleano:	.byte 0
+contador_bien:	.byte 0
 
 seleccionar: 	.asciz "\nPulse m para volver al menu y r para reiniciar.\n"
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 espacio: 	.byte 32
 interrog: 	.byte 63
-
-mensaje_falloo:  .asciz  "CAGASTE WEY\n" 
+cad_acierto: 	.asciz "\nENHORABUENA! Acertaste la palabra.\n"
+mensaje_falloo:  .asciz  "Se te acabaron los intentos!\n" 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;Variables para guardar cada intento de la palabra
 palabra1:  	.asciz "     "
@@ -145,12 +145,14 @@ lcn_lectura:
 	bhs lcn_limpia
 	blo lcn_convierte
 salta:
-    jsr wordle
+    ldb #0			;Reiniciamos el contador de los intentos
+    stb intento_actual		;Y lo guardamos en la var q hemos creado
+    jsr wordle			;Volvemos al menu
     rts
 reinicia:
-    ldb #0
-    stb intento_actual
-    jsr juego
+    ldb #0			;Reiniciamos el contador de los intentos
+    stb intento_actual		;Lo guardamos en los intentos
+    jsr juego			;Reiniciamos juego
     rts
 sig:
 	stb, x+
@@ -162,6 +164,7 @@ quita_anterior:
 	ldb #8
 	stb pantalla
 	stb pantalla
+	leax -1,x			; Decrementamos el puntero para ponernos en el caracter de atrás
 	deca				; Decrementamos el contador para que nos deje re-escribir la palabra
 	bra lcn_lectura
 lcn_convierte:
@@ -262,8 +265,8 @@ comprueba_final_m:
 ;										;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;Palabra 1
 inicio:
+   clr contador_bien
    ldb #'\n
    stb pantalla
    ldb intento_actual
@@ -285,14 +288,25 @@ reiniciar_ptr:
 	ldx #palabra_s
 	ldy #palabra1
 comparaciones:
-	lda ,x+ ;Compara                     
+	lda ,x+ ;Compara 
+	ldb contador_bien
+	cmpb #5			;Si el contador es 5, quiere decir q tiene 5 letras bien por lo que la palabra es correcta
+	beq acierto                    
 	cmpa #'\0
 	beq final_w1
 	cmpa ,y+
 	beq pos_correcta
 	bne otra_pos
+
+acierto: 	
+	ldx #barra		;Cuando se acierta la palabra, cargamos la barra externa
+	jsr imprime_cadena	;Imprime
+	ldx #cad_acierto	;Carga cadena mensaje
+	jsr imprime_cadena
+	bra elegir		;Elige
 pos_correcta:
 	sta pantalla
+	inc contador_bien	;Incrementamos un contador para contar las letras bien posicionadas
 	bra comparaciones
 otra_pos:
 	cmpa ,y+
@@ -301,11 +315,11 @@ otra_pos:
 	beq  no_esta
 	bra otra_pos
 escribe_otra_pos:
-	ldb interrog
+	ldb interrog		; El simbolo de la interrog es cuando la letra está en la palabra pero no en la posición correcta
 	stb pantalla
 	bra comparaciones
 no_esta:
-	ldb espacio
+	ldb #espacio
 	stb pantalla
 	bra comparaciones
 final_w1:
@@ -314,15 +328,15 @@ final_w1:
 	inc intento_actual
 	rts
 mensaje_fallo:
-	ldx #mensaje_falloo
+	ldx #mensaje_falloo	;Se acabaron los intentos
 	jsr imprime_cadena
 	bra elegir
-elegir:
-	ldx #elegir
+elegir:				;Elige entre volver al menu y reiniciar el juego
+	ldx #seleccionar
 	jsr imprime_cadena
 	ldb teclado
 	cmpb #'m
-	jmp salta
+	lbeq salta
 	cmpb #'r
-	jmp reinicia
+	lbeq reinicia ; lbeq (Salto largo)
 	bra elegir

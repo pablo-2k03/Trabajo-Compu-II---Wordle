@@ -107,7 +107,7 @@ Hexidecimal [16-Bits]
    0144 10 CE B0 00   [ 4]   49 	lds #ps
    0148 CE F0 00      [ 3]   50 	ldu #pu
    014B 8E 00 00      [ 3]   51 	ldx #menu
-   014E BD 02 91      [ 8]   52 	jsr imprime_cadena		
+   014E BD 02 C7      [ 8]   52 	jsr imprime_cadena		
                              53 
    0151                      54 opcion:
    0151 B6 FF 02      [ 5]   55 	lda teclado
@@ -125,29 +125,29 @@ Hexidecimal [16-Bits]
 
                              63 	
    0162                      64 diccionario:
-   0162 8E 03 FD      [ 3]   65 	ldx #presentar_diccionario
-   0165 BD 02 91      [ 8]   66 	jsr imprime_cadena
-   0168 8E 04 1A      [ 3]   67 	ldx #palabras
-   016B BD 02 91      [ 8]   68 	jsr imprime_cadena
-   016E BD 04 99      [ 8]   69 	jsr return_c
+   0162 8E 04 56      [ 3]   65 	ldx #presentar_diccionario
+   0165 BD 02 C7      [ 8]   66 	jsr imprime_cadena
+   0168 8E 04 73      [ 3]   67 	ldx #palabras
+   016B BD 02 C7      [ 8]   68 	jsr imprime_cadena
+   016E BD 04 F2      [ 8]   69 	jsr return_c
    0171 B6 FF 02      [ 5]   70 	lda teclado	;Como system("pause") de C, hasta q no meta nada por teclado no avanza.
    0174 20 CE         [ 3]   71 	bra wordle
    0176                      72 error:
    0176 8E 01 04      [ 3]   73 	ldx #err
-   0179 BD 02 91      [ 8]   74 	jsr imprime_cadena
+   0179 BD 02 C7      [ 8]   74 	jsr imprime_cadena
    017C 20 D3         [ 3]   75 	bra opcion
                              76 
    017E                      77 juego:
    017E 8E 00 A6      [ 3]   78 	ldx #menujogo
-   0181 BD 02 91      [ 8]   79 	jsr imprime_cadena
+   0181 BD 02 C7      [ 8]   79 	jsr imprime_cadena
    0184 BD 01 87      [ 8]   80 	jsr pedir_palabra
    0187                      81 pedir_palabra:
    0187 8E 00 EB      [ 3]   82 	ldx #int_palabra
-   018A BD 02 91      [ 8]   83 	jsr imprime_cadena
+   018A BD 02 C7      [ 8]   83 	jsr imprime_cadena
    018D 86 06         [ 2]   84 	lda #6	;Numero maximo de caracteres q pueden introducir(n-1)
-   018F BD 02 C7      [ 8]   85 	jsr lee_cadena_n
-   0192 BD 03 50      [ 8]   86 	jsr comprueba
-   0195 BD 03 7C      [ 8]   87 	jsr inicio
+   018F BD 02 FD      [ 8]   85 	jsr lee_cadena_n
+   0192 BD 03 8D      [ 8]   86 	jsr comprueba
+   0195 BD 03 B9      [ 8]   87 	jsr inicio
    0198 20 ED         [ 3]   88 	bra pedir_palabra
    019A                      89 acabar:
    019A 4F            [ 2]   90 	clra

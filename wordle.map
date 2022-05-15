@@ -13,7 +13,7 @@ Area                       Addr        Size        Decimal Bytes (Attributes)
           0000  .__.ABS.                           wordle
           0000  l_FIJA                          
           0000  s_FIJA                          
-          04B0  l__CODE                         
+          0509  l__CODE                         
 
 ASxxxx Linker V05.00,  page 2.
 Hexidecimal  [16-Bits]
@@ -21,7 +21,7 @@ Hexidecimal  [16-Bits]
 
 Area                       Addr        Size        Decimal Bytes (Attributes)
 --------------------       ----        ----        ------- ----- ------------
-_CODE                      0000        04B0 =        1200. bytes (REL,CON,CSEG)
+_CODE                      0000        0509 =        1289. bytes (REL,CON,CSEG)
 
          Value  Global                             Global Defined In Module
          -----  --------------------------------   ------------------------
@@ -29,18 +29,18 @@ _CODE                      0000        04B0 =        1200. bytes (REL,CON,CSEG)
           017E  juego                              wordle
           0187  pedir_palabra                      wordle
           019A  acabar                             wordle
-          0291  imprime_cadena                     subrutinaswordle
-          029F  contador                           subrutinaswordle
-          02B6  convertir                          subrutinaswordle
-          02BC  incrementa_a                       subrutinaswordle
-          02C1  salir_bucle                        subrutinaswordle
-          02C7  lee_cadena_n                       subrutinaswordle
-          0350  comprueba                          subrutinaswordle
-          037C  inicio                             subrutinaswordle
-          03FD  presentar_diccionario              diccionario
-          041A  palabras                           diccionario
-          048D  numero_palabras                    diccionario
-          0499  return_c                           diccionario
+          02C7  imprime_cadena                     subrutinaswordle
+          02D5  contador                           subrutinaswordle
+          02EC  convertir                          subrutinaswordle
+          02F2  incrementa_a                       subrutinaswordle
+          02F7  salir_bucle                        subrutinaswordle
+          02FD  lee_cadena_n                       subrutinaswordle
+          038D  comprueba                          subrutinaswordle
+          03B9  inicio                             subrutinaswordle
+          0456  presentar_diccionario              diccionario
+          0473  palabras                           diccionario
+          04E6  numero_palabras                    diccionario
+          04F2  return_c                           diccionario
 ASxxxx Linker V05.00,  page 3.
 
 Files Linked                              [ module(s) ]
