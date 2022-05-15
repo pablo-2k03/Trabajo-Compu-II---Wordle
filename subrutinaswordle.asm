@@ -5,22 +5,27 @@ teclado	.equ 0xFF02
 pantalla	.equ 0xFF00
 pu		.equ 0xE000
 ps		.equ 0xF000
+intento_actual: .byte 0
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 palabra: 	.asciz '     '
 palabra_s: 	.asciz "MOSCA"	
 palabra_mal:	.asciz "\nLa palabra NO esta en el diccionario.\n"
+palabra_bien:   .asciz "\nLa palabra esta en el diccionario.\n"
 booleano:	.byte 0
+
+seleccionar: 	.asciz "\nPulse m para volver al menu y r para reiniciar.\n"
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-espacio: 	.asciz " "
+espacio: 	.byte 32
+interrog: 	.byte 63
+
+mensaje_falloo:  .asciz  "CAGASTE WEY\n" 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;Variables para guardar cada intento de la palabra
 palabra1:  	.asciz "     "
-palabra2:  	.asciz "     "
-palabra3:  	.asciz "     "
-palabra4:  	.asciz "     "
-palabra5:  	.asciz "     "
-palabra6: 	.asciz "     "
-barra: 	.asciz " | "
+barra: 		.asciz " | "
+barra1: 	.asciz "    | "
+
+mensaje_vuelta: .asciz ""
 ;;;;;;;;;;;;;;;;;;;;;;;;;    Variables Globales ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	.globl imprime_cadena
 	.globl contador
@@ -31,12 +36,16 @@ barra: 	.asciz " | "
 	.globl salir_bucle
 	.globl comprueba
 	.globl pedir_palabra
-	.globl lpi
-	.globl lpi2
-	.globl lpi3
-	.globl lpi4
-	.globl lpi5
-	.globl lpi6
+	.globl inicio
+	.globl wordle
+	.globl juego
+	.globl acabar
+menujogo:
+	.ascii "\33[2J\33[H" ;Limpia la pantalla y pone el cursor arriba.
+	.ascii "\n     | JUEGO |\n"
+	.ascii "--------------\n"
+	.ascii "     | 12345 |\n"
+	.asciz "--------------\n"
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;	Subrutina: Imprime cadena						  ;
 ;	Funcionamiento: Imprime una cadena leida por teclado o ya establecida. ;  
@@ -120,6 +129,10 @@ lcn_lectura:
 	cmpa lcn_max
 	bhs  lcn_finlecturan
 	ldb teclado
+	cmpb #'v
+	beq salta
+	cmpb #'r
+	beq reinicia
 	cmpb #32
 	beq quita_anterior
 	cmpb #65 		;Comparamos con el codigo ascii 65
@@ -131,6 +144,14 @@ lcn_lectura:
 	cmpb #123		;Si es superior que 123 limpia, y sino convierte
 	bhs lcn_limpia
 	blo lcn_convierte
+salta:
+    jsr wordle
+    rts
+reinicia:
+    ldb #0
+    stb intento_actual
+    jsr juego
+    rts
 sig:
 	stb, x+
 	cmpb #'\n
@@ -220,7 +241,8 @@ avanza_palabra:
 	beq comprueba_final_m
 	bra avanza_palabra
 comprueba_final_b:
-	;jsr juego
+	;ldx #palabra_bien
+	;jsr imprime_cadena
 	rts
 comprueba_final_m:
 	ldx #palabra_mal
@@ -239,233 +261,68 @@ comprueba_final_m:
 ;										;
 ;										;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;		0-Verde 1-Amarillo 2-Rojo 3-Blanco				;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 ;Palabra 1
-lpi:
-	bra imprime_inicio
-lp_carga:
-	ldy #palabra_s
-	ldx #palabra1
-logica_principal:
-	lda ,x+
+inicio:
+   ldb #'\n
+   stb pantalla
+   ldb intento_actual
+   addb #49
+   cmpb #'6
+   beq mensaje_fallo
+   stb pantalla
+   ldx #barra1
+   jsr imprime_cadena
+   ldx #palabra  ;Cadena leida
+   ldy #palabra1 ;String Vacia
+copiar: ;Esta wea copia
+   lda ,x+  ;Carga en a el elemento de x
+   sta ,y+  ;Almacena en y lo que halla en A
+   cmpa #'\0  ; Lo comparas con el final
+   beq reiniciar_ptr ;Si es igual, es q la copia ha finalizado y los ptrs se reinician.
+   bra copiar ;Sino, q siga copiando
+reiniciar_ptr:
+	ldx #palabra_s
+	ldy #palabra1
+comparaciones:
+	lda ,x+ ;Compara                     
 	cmpa #'\0
-	beq lp_fin
-	cmpa ,y+	
-	beq lp_bien
-	bne lp_comp
-lp_bien:
-	jsr imprime_cadena
-	sta pantalla
-lp_comp:
+	beq final_w1
 	cmpa ,y+
-	beq lp_estan
-	cmpy #'\0
-	beq lp_mal
-	bra lp_comp
-lp_estan:
-	ldx #'?
-	jsr imprime_cadena
-	bra lp_carga
-lp_mal:
-	lda #espacio
+	beq pos_correcta
+	bne otra_pos
+pos_correcta:
 	sta pantalla
-	bra lp_carga 
-lp_fin:
-	rts
-imprime_inicio:
-	lda #1
-	sta pantalla
+	bra comparaciones
+otra_pos:
+	cmpa ,y+
+	beq  escribe_otra_pos
+	cmpa #'\0
+	beq  no_esta
+	bra otra_pos
+escribe_otra_pos:
+	ldb interrog
+	stb pantalla
+	bra comparaciones
+no_esta:
+	ldb espacio
+	stb pantalla
+	bra comparaciones
+final_w1:
 	ldx #barra
 	jsr imprime_cadena
-	bra lp_carga
-;Palabra 2
-lpi2:
-	bra imprime_inicio
-lp_carga2:
-	ldy #palabra_s
-	ldx #palabra2
-logica_principal2:
-	lda ,x+
-	cmpa #'\0
-	beq lp_fin2
-	cmpa ,y+	
-	beq lp_bien2
-	bne lp_comp2
-lp_bien2:
-	jsr imprime_cadena
-	sta pantalla
-lp_comp2:
-	cmpa ,y+
-	beq lp_estan2
-	cmpy #'\0
-	beq lp_mal2
-	bra lp_comp2
-lp_estan2:
-	ldx #'?
-	jsr imprime_cadena
-	bra lp_carga2
-lp_mal2:
-	lda #espacio
-	sta pantalla
-	bra lp_carga2 
-lp_fin2:
+	inc intento_actual
 	rts
-imprime_inicio2:
-	lda #2
-	sta pantalla
-	ldx #barra
+mensaje_fallo:
+	ldx #mensaje_falloo
 	jsr imprime_cadena
-	bra lp_carga2
-;Palabra 3
-lpi3:
-	bra imprime_inicio3
-lp_carga3:
-	ldy #palabra_s
-	ldx #palabra3
-logica_principal3:
-	lda ,x+
-	cmpa #'\0
-	beq lp_fin3
-	cmpa ,y+	
-	beq lp_bien3
-	bne lp_comp3
-lp_bien3:
+	bra elegir
+elegir:
+	ldx #elegir
 	jsr imprime_cadena
-	sta pantalla
-lp_comp3:
-	cmpa ,y+
-	beq lp_estan3
-	cmpy #'\0
-	beq lp_mal3
-	bra lp_comp3
-lp_estan3:
-	ldx #'?
-	jsr imprime_cadena
-	bra lp_carga3
-lp_mal3:
-	lda #espacio
-	sta pantalla
-	bra lp_carga3 
-lp_fin3:
-	rts
-imprime_inicio3:
-	lda #3
-	sta pantalla
-	ldx #barra
-	jsr imprime_cadena
-	bra lp_carga3
-;Palabra 4
-lpi4:
-	bra imprime_inicio4
-lp_carga4:
-	ldy #palabra_s
-	ldx #palabra4
-logica_principal4:
-	lda ,x+
-	cmpa #'\0
-	beq lp_fin4
-	cmpa ,y+	
-	beq lp_bien4
-	bne lp_comp4
-lp_bien4:
-	jsr imprime_cadena
-	sta pantalla
-lp_comp4:
-	cmpa ,y+
-	beq lp_estan4
-	cmpy #'\0
-	beq lp_mal4
-	bra lp_comp4
-lp_estan4:
-	ldx #'?
-	jsr imprime_cadena
-	bra lp_carga4
-lp_mal4:
-	lda #espacio
-	sta pantalla
-	bra lp_carga4
-lp_fin4:
-	rts
-imprime_inicio4:
-	lda #4
-	sta pantalla
-	ldx #barra
-	jsr imprime_cadena
-	bra lp_carga4
-;Palabra 5
-lpi5:
-	bra imprime_inicio5
-lp_carga5:
-	ldy #palabra_s
-	ldx #palabra5
-logica_principal5:
-	lda ,x+
-	cmpa #'\0
-	beq lp_fin5
-	cmpa ,y+	
-	beq lp_bien5
-	bne lp_comp5
-lp_bien5:
-	jsr imprime_cadena
-	sta pantalla
-lp_comp5:
-	cmpa ,y+
-	beq lp_estan5
-	cmpy #'\0
-	beq lp_mal5
-	bra lp_comp5
-lp_estan5:
-	ldx #'?
-	jsr imprime_cadena
-	bra lp_carga5
-lp_mal5:
-	lda #espacio
-	sta pantalla
-	bra lp_carga5 
-lp_fin5:
-	rts
-imprime_inicio5:
-	lda #5
-	sta pantalla
-	ldx #barra
-	jsr imprime_cadena
-	bra lp_carga5
-;Palabra 6
-lpi6:
-	bra imprime_inicio6
-lp_carga6:
-	ldy #palabra_s
-	ldx #palabra6
-logica_principal6:
-	lda ,x+
-	cmpa #'\0
-	beq lp_fin6
-	cmpa ,y+	
-	beq lp_bien6
-	bne lp_comp6
-lp_bien6:
-	jsr imprime_cadena
-	sta pantalla
-lp_comp6:
-	cmpa ,y+
-	beq lp_estan6
-	cmpy #'\0
-	beq lp_mal6
-	bra lp_comp6
-lp_estan6:
-	ldx #'?
-	jsr imprime_cadena
-	bra lp_carga6
-lp_mal6:
-	lda #espacio
-	sta pantalla
-	bra lp_carga6 
-lp_fin6:
-	rts
-imprime_inicio6:
-	lda #6
-	sta pantalla
-	ldx #barra
-	jsr imprime_cadena
-	bra lp_carga6
+	ldb teclado
+	cmpb #'m
+	jmp salta
+	cmpb #'r
+	jmp reinicia
+	bra elegir

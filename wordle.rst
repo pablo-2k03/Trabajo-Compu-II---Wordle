@@ -100,81 +100,63 @@ Hexidecimal [16-Bits]
                              42 			.globl presentar_diccionario
                              43 			.globl comprueba
                              44 			.globl pedir_palabra
-                             45 			.globl imprime_filas
-                             46 			.globl lp_carga
-                             47 			.globl lp_carga2
-                             48 			.globl lp_carga3
-                             49 			.globl lp_carga4
-                             50 			.globl lp_carga5
-                             51 			.globl lp_carga6
-   0144                      52 wordle:
-   0144 10 CE B0 00   [ 4]   53 	lds #ps
-   0148 CE F0 00      [ 3]   54 	ldu #pu
-   014B 8E 00 00      [ 3]   55 	ldx #menu
-   014E BD 02 28      [ 8]   56 	jsr imprime_cadena		
-                             57 
-   0151                      58 opcion:
-   0151 B6 FF 02      [ 5]   59 	lda teclado
-   0154 81 31         [ 2]   60 	cmpa #'1
-   0156 27 0A         [ 3]   61 	beq diccionario
-   0158 81 32         [ 2]   62 	cmpa #'2
+                             45 			.globl inicio
+                             46 			.globl juego
+                             47 			.globl acabar
+   0144                      48 wordle:
+   0144 10 CE B0 00   [ 4]   49 	lds #ps
+   0148 CE F0 00      [ 3]   50 	ldu #pu
+   014B 8E 00 00      [ 3]   51 	ldx #menu
+   014E BD 02 91      [ 8]   52 	jsr imprime_cadena		
+                             53 
+   0151                      54 opcion:
+   0151 B6 FF 02      [ 5]   55 	lda teclado
+   0154 81 31         [ 2]   56 	cmpa #'1
+   0156 27 0A         [ 3]   57 	beq diccionario
+   0158 81 32         [ 2]   58 	cmpa #'2
+   015A 27 22         [ 3]   59 	beq juego
+   015C 81 33         [ 2]   60 	cmpa #'3
+   015E 27 3A         [ 3]   61 	beq acabar
+   0160 20 14         [ 3]   62 	bra error
 ASxxxx Assembler V05.00  (Motorola 6809), page 3.
 Hexidecimal [16-Bits]
 
 
 
-   015A 27 22         [ 3]   63 	beq juego
-   015C 81 33         [ 2]   64 	cmpa #'3
-   015E 27 65         [ 3]   65 	beq acabar
-   0160 20 14         [ 3]   66 	bra error
-                             67 	
-   0162                      68 diccionario:
-   0162 8E 04 96      [ 3]   69 	ldx #presentar_diccionario
-   0165 BD 02 28      [ 8]   70 	jsr imprime_cadena
-   0168 8E 04 B3      [ 3]   71 	ldx #palabras
-   016B BD 02 28      [ 8]   72 	jsr imprime_cadena
-   016E BD 05 2C      [ 8]   73 	jsr return_c
-   0171 B6 FF 02      [ 5]   74 	lda teclado	;Como system("pause") de C, hasta q no meta nada por teclado no avanza.
-   0174 20 CE         [ 3]   75 	bra wordle
-   0176                      76 error:
-   0176 8E 01 04      [ 3]   77 	ldx #err
-   0179 BD 02 28      [ 8]   78 	jsr imprime_cadena
-   017C 20 D3         [ 3]   79 	bra opcion
-                             80 
-   017E                      81 juego:
-   017E 8E 00 A6      [ 3]   82 	ldx #menujogo
-   0181 BD 02 28      [ 8]   83 	jsr imprime_cadena
-   0184 BD 01 87      [ 8]   84 	jsr pedir_palabra
-   0187                      85 pedir_palabra:
-   0187 8E 00 EB      [ 3]   86 	ldx #int_palabra
-   018A BD 02 28      [ 8]   87 	jsr imprime_cadena
-   018D 86 06         [ 2]   88 	lda #6	;Numero maximo de caracteres q pueden introducir(n-1)
-   018F BD 02 5E      [ 8]   89 	jsr lee_cadena_n
-   0192 BD 02 D2      [ 8]   90 	jsr comprueba
-   0195 BD 00 00      [ 8]   91 	jsr lp_carga
-   0198 BD 02 5E      [ 8]   92 	jsr lee_cadena_n
-   019B BD 02 D2      [ 8]   93 	jsr comprueba
-   019E BD 00 00      [ 8]   94 	jsr lp_carga2
-   01A1 BD 02 5E      [ 8]   95 	jsr lee_cadena_n
-   01A4 BD 02 D2      [ 8]   96 	jsr comprueba
-   01A7 BD 00 00      [ 8]   97 	jsr lp_carga3
-   01AA BD 02 5E      [ 8]   98 	jsr lee_cadena_n
-   01AD BD 02 D2      [ 8]   99 	jsr comprueba
-   01B0 BD 00 00      [ 8]  100 	jsr lp_carga4
-   01B3 BD 02 5E      [ 8]  101 	jsr lee_cadena_n
-   01B6 BD 02 D2      [ 8]  102 	jsr comprueba
-   01B9 BD 00 00      [ 8]  103 	jsr lp_carga5
-   01BC BD 02 5E      [ 8]  104 	jsr lee_cadena_n
-   01BF BD 02 D2      [ 8]  105 	jsr comprueba
-   01C2 BD 00 00      [ 8]  106 	jsr lp_carga6
-   01C5                     107 acabar:
-   01C5 4F            [ 2]  108 	clra
-   01C6 B7 FF 01      [ 5]  109 	sta fin
-                            110 		
-                            111 		.area FIJA(ABS)
-                            112 		
-   FFFE                     113 		.org 0xFFFE
-   FFFE 01 44               114 		.word wordle
+                             63 	
+   0162                      64 diccionario:
+   0162 8E 03 FD      [ 3]   65 	ldx #presentar_diccionario
+   0165 BD 02 91      [ 8]   66 	jsr imprime_cadena
+   0168 8E 04 1A      [ 3]   67 	ldx #palabras
+   016B BD 02 91      [ 8]   68 	jsr imprime_cadena
+   016E BD 04 99      [ 8]   69 	jsr return_c
+   0171 B6 FF 02      [ 5]   70 	lda teclado	;Como system("pause") de C, hasta q no meta nada por teclado no avanza.
+   0174 20 CE         [ 3]   71 	bra wordle
+   0176                      72 error:
+   0176 8E 01 04      [ 3]   73 	ldx #err
+   0179 BD 02 91      [ 8]   74 	jsr imprime_cadena
+   017C 20 D3         [ 3]   75 	bra opcion
+                             76 
+   017E                      77 juego:
+   017E 8E 00 A6      [ 3]   78 	ldx #menujogo
+   0181 BD 02 91      [ 8]   79 	jsr imprime_cadena
+   0184 BD 01 87      [ 8]   80 	jsr pedir_palabra
+   0187                      81 pedir_palabra:
+   0187 8E 00 EB      [ 3]   82 	ldx #int_palabra
+   018A BD 02 91      [ 8]   83 	jsr imprime_cadena
+   018D 86 06         [ 2]   84 	lda #6	;Numero maximo de caracteres q pueden introducir(n-1)
+   018F BD 02 C7      [ 8]   85 	jsr lee_cadena_n
+   0192 BD 03 50      [ 8]   86 	jsr comprueba
+   0195 BD 03 7C      [ 8]   87 	jsr inicio
+   0198 20 ED         [ 3]   88 	bra pedir_palabra
+   019A                      89 acabar:
+   019A 4F            [ 2]   90 	clra
+   019B B7 FF 01      [ 5]   91 	sta fin
+                             92 		
+                             93 		.area FIJA(ABS)
+                             94 		
+   FFFE                      95 		.org 0xFFFE
+   FFFE 01 44                96 		.word wordle
 ASxxxx Assembler V05.00  (Motorola 6809), page 4.
 Hexidecimal [16-Bits]
 
@@ -182,15 +164,12 @@ Symbol Table
 
     .__.$$$.       =   2710 L   |     .__.ABS.       =   0000 G
     .__.CPU.       =   0000 L   |     .__.H$L.       =   0001 L
-  0 acabar             01C5 R   |     comprueba          **** GX
+  0 acabar             019A GR  |     comprueba          **** GX
   0 diccionario        0162 R   |   0 err                0104 R
   0 error              0176 R   |     fin            =   FF01 
-    imprime_cadena     **** GX  |     imprime_filas      **** GX
-  0 int_palabra        00EB R   |   0 juego              017E R
-    lee_cadena_n       **** GX  |     lp_carga           **** GX
-    lp_carga2          **** GX  |     lp_carga3          **** GX
-    lp_carga4          **** GX  |     lp_carga5          **** GX
-    lp_carga6          **** GX  |   0 menu               0000 R
+    imprime_cadena     **** GX  |     inicio             **** GX
+  0 int_palabra        00EB R   |   0 juego              017E GR
+    lee_cadena_n       **** GX  |   0 menu               0000 R
   0 menujogo           00A6 R   |     numero_palabra     **** GX
   0 opcion             0151 R   |     palabras           **** GX
     pantalla       =   FF00     |   0 pedir_palabra      0187 GR
@@ -204,7 +183,7 @@ Hexidecimal [16-Bits]
 Area Table
 
 [_CSEG]
-   0 _CODE            size  1C9   flags C180
+   0 _CODE            size  19E   flags C180
    2 FIJA             size    0   flags  908
 [_DSEG]
    1 _DATA            size    0   flags C0C0

@@ -11,16 +11,9 @@ Area                       Addr        Size        Decimal Bytes (Attributes)
           0000  s__DATA                         
           0000  s__CODE                         
           0000  .__.ABS.                           wordle
-          0000  imprime_filas                   
           0000  l_FIJA                          
-          0000  lp_carga2                       
           0000  s_FIJA                          
-          0000  lp_carga3                       
-          0000  lp_carga4                       
-          0000  lp_carga5                       
-          0000  lp_carga6                       
-          0000  lp_carga                        
-          0543  l__CODE                         
+          04B0  l__CODE                         
 
 ASxxxx Linker V05.00,  page 2.
 Hexidecimal  [16-Bits]
@@ -28,30 +21,26 @@ Hexidecimal  [16-Bits]
 
 Area                       Addr        Size        Decimal Bytes (Attributes)
 --------------------       ----        ----        ------- ----- ------------
-_CODE                      0000        0543 =        1347. bytes (REL,CON,CSEG)
+_CODE                      0000        04B0 =        1200. bytes (REL,CON,CSEG)
 
          Value  Global                             Global Defined In Module
          -----  --------------------------------   ------------------------
           0144  wordle                             wordle
+          017E  juego                              wordle
           0187  pedir_palabra                      wordle
-          0228  imprime_cadena                     subrutinaswordle
-          0236  contador                           subrutinaswordle
-          024D  convertir                          subrutinaswordle
-          0253  incrementa_a                       subrutinaswordle
-          0258  salir_bucle                        subrutinaswordle
-          025E  lee_cadena_n                       subrutinaswordle
-          02D2  comprueba                          subrutinaswordle
-          02FE  lpi                                subrutinaswordle
-          0342  lpi2                               subrutinaswordle
-          0386  lpi3                               subrutinaswordle
-          03CA  lpi4                               subrutinaswordle
-          040E  lpi5                               subrutinaswordle
-          0452  lpi6                               subrutinaswordle
-          0496  presentar_diccionario              diccionario
-          04B3  palabras                           diccionario
-          0520  numero_palabras                    diccionario
-          052C  return_c                           diccionario
-
+          019A  acabar                             wordle
+          0291  imprime_cadena                     subrutinaswordle
+          029F  contador                           subrutinaswordle
+          02B6  convertir                          subrutinaswordle
+          02BC  incrementa_a                       subrutinaswordle
+          02C1  salir_bucle                        subrutinaswordle
+          02C7  lee_cadena_n                       subrutinaswordle
+          0350  comprueba                          subrutinaswordle
+          037C  inicio                             subrutinaswordle
+          03FD  presentar_diccionario              diccionario
+          041A  palabras                           diccionario
+          048D  numero_palabras                    diccionario
+          0499  return_c                           diccionario
 ASxxxx Linker V05.00,  page 3.
 
 Files Linked                              [ module(s) ]
@@ -62,16 +51,3 @@ diccionario.rel                           [ diccionario ]
 
 
 
-?ASlink-Warning-Undefined Global imprime_filas referenced by module wordle
-
-?ASlink-Warning-Undefined Global lp_carga2 referenced by module wordle
-
-?ASlink-Warning-Undefined Global lp_carga3 referenced by module wordle
-
-?ASlink-Warning-Undefined Global lp_carga4 referenced by module wordle
-
-?ASlink-Warning-Undefined Global lp_carga5 referenced by module wordle
-
-?ASlink-Warning-Undefined Global lp_carga6 referenced by module wordle
-
-?ASlink-Warning-Undefined Global lp_carga referenced by module wordle

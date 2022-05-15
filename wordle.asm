@@ -41,13 +41,10 @@ err:
 			.globl lee_cadena_n
 			.globl presentar_diccionario
 			.globl comprueba
-			.globl pedir_palabras
-			.globl lpi
-			.globl lpi2
-			.globl lpi3
-			.globl lpi4
-			.globl lpi5
-			.globl lpi6
+			.globl pedir_palabra
+			.globl inicio
+			.globl juego
+			.globl acabar
 wordle:
 	lds #ps
 	ldu #pu
@@ -87,22 +84,8 @@ pedir_palabra:
 	lda #6	;Numero maximo de caracteres q pueden introducir(n-1)
 	jsr lee_cadena_n
 	jsr comprueba
-	jsr lpi
-	jsr lee_cadena_n
-	jsr comprueba
-	jsr lpi2
-	jsr lee_cadena_n
-	jsr comprueba
-	jsr lpi3
-	jsr lee_cadena_n
-	jsr comprueba
-	jsr lpi4
-	jsr lee_cadena_n
-	jsr comprueba
-	jsr lpi5
-	jsr lee_cadena_n
-	jsr comprueba
-	jsr lpi6
+	jsr inicio
+	bra pedir_palabra
 acabar:
 	clra
 	sta fin

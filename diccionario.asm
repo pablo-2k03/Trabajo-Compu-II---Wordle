@@ -34,6 +34,7 @@ palabras:
 	.ascii	"PERRO\n"
 	.ascii	"PANDA\n"
 	.ascii	"KOALA\n"
+	.ascii  "MORSA\n"
 	.byte	0
 	
 numero_palabras:

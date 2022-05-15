@@ -10,581 +10,437 @@ Hexidecimal [16-Bits]
                      FF00     5 pantalla	.equ 0xFF00
                      E000     6 pu		.equ 0xE000
                      F000     7 ps		.equ 0xF000
-                              8 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-   01C9 20 20 20 20 20 00     9 palabra: 	.asciz '     '
-   01CF 4D 4F 53 43 41 00    10 palabra_s: 	.asciz "MOSCA"	
-   01D5 0A 4C 61 20 70 61    11 palabra_mal:	.asciz "\nLa palabra NO esta en el diccionario.\n"
+   019E 00                    8 intento_actual: .byte 0
+                              9 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+   019F 20 20 20 20 20 00    10 palabra: 	.asciz '     '
+   01A5 4D 4F 53 43 41 00    11 palabra_s: 	.asciz "MOSCA"	
+   01AB 0A 4C 61 20 70 61    12 palabra_mal:	.asciz "\nLa palabra NO esta en el diccionario.\n"
         6C 61 62 72 61 20
         4E 4F 20 65 73 74
         61 20 65 6E 20 65
         6C 20 64 69 63 63
         69 6F 6E 61 72 69
         6F 2E 0A 00
-   01FD 00                   12 booleano:	.byte 0
-                             13 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-   01FE 20 00                14 espacio: 	.asciz " "
-                             15 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-                             16 ;Variables para guardar cada intento de la palabra
-   0200 20 20 20 20 20 00    17 palabra1:  	.asciz "     "
-   0206 20 20 20 20 20 00    18 palabra2:  	.asciz "     "
-   020C 20 20 20 20 20 00    19 palabra3:  	.asciz "     "
-   0212 20 20 20 20 20 00    20 palabra4:  	.asciz "     "
-   0218 20 20 20 20 20 00    21 palabra5:  	.asciz "     "
-   021E 20 20 20 20 20 00    22 palabra6: 	.asciz "     "
-   0224 20 7C 20 00          23 barra: 	.asciz " | "
-                             24 ;;;;;;;;;;;;;;;;;;;;;;;;;    Variables Globales ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-                             25 	.globl imprime_cadena
-                             26 	.globl contador
-                             27 	.globl palabras
-                             28 	.globl lee_cadena_n
-                             29 	.globl convertir
-                             30 	.globl incrementa_a
-                             31 	.globl salir_bucle
-                             32 	.globl comprueba
-                             33 	.globl pedir_palabra
-                             34 	.globl lpi
-                             35 	.globl lpi2
-                             36 	.globl lpi3
-                             37 	.globl lpi4
-                             38 	.globl lpi5
-                             39 	.globl lpi6
-                             40 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-                             41 ;	Subrutina: Imprime cadena						  ;
-                             42 ;	Funcionamiento: Imprime una cadena leida por teclado o ya establecida. ;  
-                             43 ;	Registros Afectados: CC						  ;
-                             44 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;	
-   0228                      45 imprime_cadena:
-   0228 36 12         [ 7]   46 	pshu a,x
-                             47 	
-   022A                      48 ic_sgte:
-   022A A6 80         [ 6]   49 	lda ,x+
+   01D3 0A 4C 61 20 70 61    13 palabra_bien:   .asciz "\nLa palabra esta en el diccionario.\n"
+        6C 61 62 72 61 20
+        65 73 74 61 20 65
+        6E 20 65 6C 20 64
+        69 63 63 69 6F 6E
+        61 72 69 6F 2E 0A
+        00
+   01F8 00                   14 booleano:	.byte 0
+                             15 
+   01F9 0A 50 75 6C 73 65    16 seleccionar: 	.asciz "\nPulse m para volver al menu y r para reiniciar.\n"
+        20 6D 20 70 61 72
+        61 20 76 6F 6C 76
+        65 72 20 61 6C 20
+        6D 65 6E 75 20 79
+        20 72 20 70 61 72
+        61 20 72 65 69 6E
+        69 63 69 61 72 2E
+        0A 00
+                             17 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+   022B 20                   18 espacio: 	.byte 32
+   022C 3F                   19 interrog: 	.byte 63
+                             20 
+   022D 43 41 47 41 53 54    21 mensaje_falloo:  .asciz  "CAGASTE WEY\n" 
+        45 20 57 45 59 0A
+        00
+                             22 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                             23 ;Variables para guardar cada intento de la palabra
+   023A 20 20 20 20 20 00    24 palabra1:  	.asciz "     "
+   0240 20 7C 20 00          25 barra: 		.asciz " | "
+   0244 20 20 20 20 7C 20    26 barra1: 	.asciz "    | "
+        00
+                             27 
+   024B 00                   28 mensaje_vuelta: .asciz ""
+                             29 ;;;;;;;;;;;;;;;;;;;;;;;;;    Variables Globales ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                             30 	.globl imprime_cadena
+                             31 	.globl contador
+                             32 	.globl palabras
 ASxxxx Assembler V05.00  (Motorola 6809), page 2.
 Hexidecimal [16-Bits]
 
 
 
-   022C 27 05         [ 3]   50 	beq ret_imprime_cadena
-   022E B7 FF 00      [ 5]   51 	sta pantalla
-   0231 20 F7         [ 3]   52 	bra ic_sgte
-                             53 
-   0233                      54 ret_imprime_cadena:
-   0233 37 12         [ 7]   55 	pulu a,x
-   0235 39            [ 5]   56 	rts
-                             57 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-                             58 ;	Subrutina: Contador de palabras					  ;
-                             59 ;	Funcionamiento: Cuenta el numero de palabras en diccionario. 	  ;  
-                             60 ;	Registros Afectados: B,CC						  ;
-                             61 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;		
-   0236                      62 contador:
-   0236 36 12         [ 7]   63 	pshu a,x
-   0238 5F            [ 2]   64 	clrb
-   0239 20 03         [ 3]   65 	bra incrementa_contador
-   023B                      66 incrementa_b:
-   023B 5C            [ 2]   67 	incb
-   023C 20 00         [ 3]   68 	bra incrementa_contador
-   023E                      69 incrementa_contador:
-   023E A6 80         [ 6]   70 	lda ,x+
-   0240 81 00         [ 2]   71 	cmpa #'\0
-   0242 27 06         [ 3]   72 	beq retorno_contador
-   0244 81 0A         [ 2]   73 	cmpa #'\n
-   0246 27 F3         [ 3]   74 	beq incrementa_b
-   0248 20 F4         [ 3]   75 	bra incrementa_contador
-   024A                      76 retorno_contador:
-   024A 37 12         [ 7]   77 	pulu a,x
-   024C 39            [ 5]   78 	rts
-                             79 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-                             80 ;	Subrutina: convertir (contador palabras diccionario)			  ;
-                             81 ;	Funcionamiento: Vamos restando el registro B y a su vez incrementando a;
-                             82 ;	Registros Afectados: A,B,CC.						  ;
-                             83 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-   024D                      84 convertir:
-   024D C1 0A         [ 2]   85 	cmpb #10
-   024F 2C 02         [ 3]   86 	bge incrementa_a 
-   0251 20 05         [ 3]   87 	bra salir_bucle
-   0253                      88 incrementa_a:
-   0253 4C            [ 2]   89 	inca
-   0254 C0 0A         [ 2]   90 	subb #10
-   0256 20 F5         [ 3]   91 	bra convertir
-   0258                      92 salir_bucle:
-   0258 8B 30         [ 2]   93 	adda #48
-   025A CB 30         [ 2]   94 	addb #48
-   025C 39            [ 5]   95 	rts
-                             96 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-                             97 ;				LCN MAX 					;
-                             98 ;										;
-                             99 ;   Le pasamos el numero a leer antes de llamar a la funcion.		;
-                            100 ;   Cargamos la pila con b, testeamos a, si es igual a 0 se devuelve		;
-                            101 ;   sino, guarda lcn_max en a y limpia a					;
-                            102 ;										;
-                            103 ;   Lemos la cadena y comparamos con el \n, si es 0 se acaba y sino vuelve   ;  
-                            104 ;   a leer.									;
+                             33 	.globl lee_cadena_n
+                             34 	.globl convertir
+                             35 	.globl incrementa_a
+                             36 	.globl salir_bucle
+                             37 	.globl comprueba
+                             38 	.globl pedir_palabra
+                             39 	.globl inicio
+                             40 	.globl wordle
+                             41 	.globl juego
+                             42 	.globl acabar
+   024C                      43 menujogo:
+   024C 1B 5B 32 4A 1B 5B    44 	.ascii "\33[2J\33[H" ;Limpia la pantalla y pone el cursor arriba.
+        48
+   0253 0A 20 20 20 20 20    45 	.ascii "\n     | JUEGO |\n"
+        7C 20 4A 55 45 47
+        4F 20 7C 0A
+   0263 2D 2D 2D 2D 2D 2D    46 	.ascii "--------------\n"
+        2D 2D 2D 2D 2D 2D
+        2D 2D 0A
+   0272 20 20 20 20 20 7C    47 	.ascii "     | 12345 |\n"
+        20 31 32 33 34 35
+        20 7C 0A
+   0281 2D 2D 2D 2D 2D 2D    48 	.asciz "--------------\n"
+        2D 2D 2D 2D 2D 2D
+        2D 2D 0A 00
+                             49 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                             50 ;	Subrutina: Imprime cadena						  ;
+                             51 ;	Funcionamiento: Imprime una cadena leida por teclado o ya establecida. ;  
+                             52 ;	Registros Afectados: CC						  ;
+                             53 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;	
+   0291                      54 imprime_cadena:
+   0291 36 12         [ 7]   55 	pshu a,x
+                             56 	
+   0293                      57 ic_sgte:
+   0293 A6 80         [ 6]   58 	lda ,x+
+   0295 27 05         [ 3]   59 	beq ret_imprime_cadena
+   0297 B7 FF 00      [ 5]   60 	sta pantalla
+   029A 20 F7         [ 3]   61 	bra ic_sgte
+                             62 
+   029C                      63 ret_imprime_cadena:
+   029C 37 12         [ 7]   64 	pulu a,x
+   029E 39            [ 5]   65 	rts
+                             66 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                             67 ;	Subrutina: Contador de palabras					  ;
+                             68 ;	Funcionamiento: Cuenta el numero de palabras en diccionario. 	  ;  
+                             69 ;	Registros Afectados: B,CC						  ;
+                             70 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;		
+   029F                      71 contador:
+   029F 36 12         [ 7]   72 	pshu a,x
+   02A1 5F            [ 2]   73 	clrb
+   02A2 20 03         [ 3]   74 	bra incrementa_contador
+   02A4                      75 incrementa_b:
+   02A4 5C            [ 2]   76 	incb
+   02A5 20 00         [ 3]   77 	bra incrementa_contador
+   02A7                      78 incrementa_contador:
 ASxxxx Assembler V05.00  (Motorola 6809), page 3.
 Hexidecimal [16-Bits]
 
 
 
-                            105 ;  										;
-                            106 ;   Registros Afectados: A y CC						;
+   02A7 A6 80         [ 6]   79 	lda ,x+
+   02A9 81 00         [ 2]   80 	cmpa #'\0
+   02AB 27 06         [ 3]   81 	beq retorno_contador
+   02AD 81 0A         [ 2]   82 	cmpa #'\n
+   02AF 27 F3         [ 3]   83 	beq incrementa_b
+   02B1 20 F4         [ 3]   84 	bra incrementa_contador
+   02B3                      85 retorno_contador:
+   02B3 37 12         [ 7]   86 	pulu a,x
+   02B5 39            [ 5]   87 	rts
+                             88 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                             89 ;	Subrutina: convertir (contador palabras diccionario)			  ;
+                             90 ;	Funcionamiento: Vamos restando el registro B y a su vez incrementando a;
+                             91 ;	Registros Afectados: A,B,CC.						  ;
+                             92 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+   02B6                      93 convertir:
+   02B6 C1 0A         [ 2]   94 	cmpb #10
+   02B8 2C 02         [ 3]   95 	bge incrementa_a 
+   02BA 20 05         [ 3]   96 	bra salir_bucle
+   02BC                      97 incrementa_a:
+   02BC 4C            [ 2]   98 	inca
+   02BD C0 0A         [ 2]   99 	subb #10
+   02BF 20 F5         [ 3]  100 	bra convertir
+   02C1                     101 salir_bucle:
+   02C1 8B 30         [ 2]  102 	adda #48
+   02C3 CB 30         [ 2]  103 	addb #48
+   02C5 39            [ 5]  104 	rts
+                            105 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                            106 ;				LCN MAX 					;
                             107 ;										;
-                            108 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-   025D 00                  109 lcn_max: .byte 0
-                            110 
-   025E                     111 lee_cadena_n:
-   025E 34 04         [ 6]  112 	pshs b
-   0260 8E 01 C9      [ 3]  113 	ldx #palabra
-   0263 4D            [ 2]  114 	tsta
-   0264 27 54         [ 3]  115 	beq lcn_retorno
-   0266 4A            [ 2]  116 	deca
-   0267 B7 02 5D      [ 5]  117 	sta lcn_max
-   026A 4F            [ 2]  118 	clra
-   026B                     119 lcn_lectura:
-   026B B1 02 5D      [ 5]  120 	cmpa lcn_max
-   026E 24 48         [ 3]  121 	bhs  lcn_finlecturan
-   0270 F6 FF 02      [ 5]  122 	ldb teclado
-   0273 C1 20         [ 2]  123 	cmpb #32
-   0275 27 1B         [ 3]  124 	beq quita_anterior
-   0277 C1 41         [ 2]  125 	cmpb #65 		;Comparamos con el codigo ascii 65
-   0279 25 32         [ 3]  126 	blo lcn_limpia		; Si es menor, limpia, porque el codigo ascii 65 es la A
-   027B C1 5A         [ 2]  127 	cmpb #90		;Comparamos con el ascii 90	
-   027D 23 0A         [ 3]  128 	bls sig		; Si es menor, son mayusculas, asi q sigue
-   027F C1 61         [ 2]  129 	cmpb #97		;Del 90 al 97 hay caracteres q no nos interesan, asi q limpia
-   0281 25 2A         [ 3]  130 	blo lcn_limpia
-   0283 C1 7B         [ 2]  131 	cmpb #123		;Si es superior que 123 limpia, y sino convierte
-   0285 24 26         [ 3]  132 	bhs lcn_limpia
-   0287 25 14         [ 3]  133 	blo lcn_convierte
-   0289                     134 sig:
-   0289 E7 80         [ 6]  135 	stb, x+
-   028B C1 0A         [ 2]  136 	cmpb #'\n
-   028D 27 25         [ 3]  137 	beq lcn_finlectura
-   028F 4C            [ 2]  138 	inca
-   0290 20 D9         [ 3]  139 	bra lcn_lectura
-   0292                     140 quita_anterior:
-   0292 C6 08         [ 2]  141 	ldb #8
-   0294 F7 FF 00      [ 5]  142 	stb pantalla
-   0297 F7 FF 00      [ 5]  143 	stb pantalla
-   029A 4A            [ 2]  144 	deca				; Decrementamos el contador para que nos deje re-escribir la palabra
-   029B 20 CE         [ 3]  145 	bra lcn_lectura
-   029D                     146 lcn_convierte:
-                            147 
-   029D 36 04         [ 6]  148 	pshu b				;Lo metemos en la pila para no perder el valor.
-   029F C6 08         [ 2]  149 	ldb #8				;El cursor apunta al anterior.
-   02A1 F7 FF 00      [ 5]  150 	stb pantalla
-   02A4 37 04         [ 6]  151 	pulu b				;Lo sacamos de la pila
-   02A6 C0 20         [ 2]  152 	subb #32			;Le resta 32 al ascii cargado en b
-   02A8 F7 FF 00      [ 5]  153 	stb pantalla			;Saca por pantalla y sigue
-   02AB 20 DC         [ 3]  154 	bra sig
-                            155 	
-   02AD                     156 lcn_limpia:
-   02AD C6 08         [ 2]  157 	ldb #8
-   02AF F7 FF 00      [ 5]  158 	stb pantalla
-   02B2 20 B7         [ 3]  159 	bra lcn_lectura
+                            108 ;   Le pasamos el numero a leer antes de llamar a la funcion.		;
+                            109 ;   Cargamos la pila con b, testeamos a, si es igual a 0 se devuelve		;
+                            110 ;   sino, guarda lcn_max en a y limpia a					;
+                            111 ;										;
+                            112 ;   Lemos la cadena y comparamos con el \n, si es 0 se acaba y sino vuelve   ;  
+                            113 ;   a leer.									;
+                            114 ;  										;
+                            115 ;   Registros Afectados: A y CC						;
+                            116 ;										;
+                            117 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+   02C6 00                  118 lcn_max: .byte 0
+                            119 
+   02C7                     120 lee_cadena_n:
+   02C7 34 04         [ 6]  121 	pshs b
+   02C9 8E 01 9F      [ 3]  122 	ldx #palabra
+   02CC 4D            [ 2]  123 	tsta
+   02CD 27 69         [ 3]  124 	beq lcn_retorno
+   02CF 4A            [ 2]  125 	deca
+   02D0 B7 02 C6      [ 5]  126 	sta lcn_max
+   02D3 4F            [ 2]  127 	clra
+   02D4                     128 lcn_lectura:
+   02D4 B1 02 C6      [ 5]  129 	cmpa lcn_max
+   02D7 24 5D         [ 3]  130 	bhs  lcn_finlecturan
+   02D9 F6 FF 02      [ 5]  131 	ldb teclado
+   02DC C1 76         [ 2]  132 	cmpb #'v
+   02DE 27 1A         [ 3]  133 	beq salta
 ASxxxx Assembler V05.00  (Motorola 6809), page 4.
 Hexidecimal [16-Bits]
 
 
 
-   02B4                     160 lcn_finlectura:
-   02B4 6F 82         [ 8]  161 	clr ,-x			;Borra la posicion siguiente 
-   02B6 20 02         [ 3]  162 	bra lcn_retorno
-                            163 
-   02B8                     164 lcn_finlecturan:
-   02B8 6F 84         [ 6]  165 	clr ,x
-                            166 
-   02BA                     167 lcn_retorno:
-   02BA 35 04         [ 6]  168 	puls b
-   02BC 39            [ 5]  169 	rts
-                            170 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-                            171 ;      Generador Palabra		   ;
-                            172 ; Cargamos la pila y cargamos d con palabras
-                            173 ; metes d dentro de la pila para q el primer caracter
-                            174 ;entre en la pila, añades 1 para q vaya metiendo;
-                            175 ;					    
-                            176 					   
-                            177 					    ;
-                            178 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-                            179 
-   02BD                     180 generar:
-   02BD 10 FE F0 00   [ 7]  181 	lds ps
-   02C1 CC 04 B3      [ 3]  182 	ldd #palabras
-   02C4 34 06         [ 7]  183 	pshs d
-   02C6 C3 00 01      [ 4]  184 	addd #1
-   02C9 10 83 00 0A   [ 5]  185 	cmpd #'\n
-   02CD 27 02         [ 3]  186 	beq g_acabar
-   02CF 20 EC         [ 3]  187 	bra generar
-   02D1                     188 g_acabar: 
-   02D1 39            [ 5]  189 	rts
-                            190 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-                            191 ;				Comprueba palabra				;
-                            192 ;										;
-                            193 ;   Subrutina: Comprueba palabra diccionario					;
-                            194 ;   										;
-                            195 ;   Funcionamiento: Comprueba si la palabra introducida por el usuario	;
-                            196 ;   se encuentra en el diccionario o no					;
-                            197 ;										;  
-                            198 ;   Registros Afectados: X,Y y CC						;
-                            199 ;  										;
-                            200 ;   										;
-                            201 ;										;
-                            202 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-                            203 
-                            204 
-   02D2                     205 comprueba:
-   02D2 8E 04 B3      [ 3]  206 	ldx #palabras ;Cargamos en X la direccion donde estan las palabras
-   02D5 10 8E 01 C9   [ 4]  207 	ldy #palabra
-   02D9                     208 sig_palabra:
-   02D9 A6 80         [ 6]  209 	lda ,x+ ; Cargamos en a el siguiente caracter de x
-   02DB A1 A0         [ 6]  210 	cmpa ,y+ ;Comparamos a con el siguiente caracter de y
-   02DD 27 FA         [ 3]  211 	beq sig_palabra; Si es igual, que vuelva a hacer lo mismo.
-   02DF 81 0A         [ 2]  212 	cmpa #'\n 
-   02E1 27 10         [ 3]  213 	beq comprueba_final_b ; Llamamos a comprueba_final_b e indicamos q la palabra esta en el diccionario.
-   02E3                     214 avanza_palabra:
+   02E0 C1 72         [ 2]  134 	cmpb #'r
+   02E2 27 1A         [ 3]  135 	beq reinicia
+   02E4 C1 20         [ 2]  136 	cmpb #32
+   02E6 27 28         [ 3]  137 	beq quita_anterior
+   02E8 C1 41         [ 2]  138 	cmpb #65 		;Comparamos con el codigo ascii 65
+   02EA 25 3F         [ 3]  139 	blo lcn_limpia		; Si es menor, limpia, porque el codigo ascii 65 es la A
+   02EC C1 5A         [ 2]  140 	cmpb #90		;Comparamos con el ascii 90	
+   02EE 23 17         [ 3]  141 	bls sig		; Si es menor, son mayusculas, asi q sigue
+   02F0 C1 61         [ 2]  142 	cmpb #97		;Del 90 al 97 hay caracteres q no nos interesan, asi q limpia
+   02F2 25 37         [ 3]  143 	blo lcn_limpia
+   02F4 C1 7B         [ 2]  144 	cmpb #123		;Si es superior que 123 limpia, y sino convierte
+   02F6 24 33         [ 3]  145 	bhs lcn_limpia
+   02F8 25 21         [ 3]  146 	blo lcn_convierte
+   02FA                     147 salta:
+   02FA BD 01 44      [ 8]  148     jsr wordle
+   02FD 39            [ 5]  149     rts
+   02FE                     150 reinicia:
+   02FE C6 00         [ 2]  151     ldb #0
+   0300 F7 01 9E      [ 5]  152     stb intento_actual
+   0303 BD 01 7E      [ 8]  153     jsr juego
+   0306 39            [ 5]  154     rts
+   0307                     155 sig:
+   0307 E7 80         [ 6]  156 	stb, x+
+   0309 C1 0A         [ 2]  157 	cmpb #'\n
+   030B 27 25         [ 3]  158 	beq lcn_finlectura
+   030D 4C            [ 2]  159 	inca
+   030E 20 C4         [ 3]  160 	bra lcn_lectura
+   0310                     161 quita_anterior:
+   0310 C6 08         [ 2]  162 	ldb #8
+   0312 F7 FF 00      [ 5]  163 	stb pantalla
+   0315 F7 FF 00      [ 5]  164 	stb pantalla
+   0318 4A            [ 2]  165 	deca				; Decrementamos el contador para que nos deje re-escribir la palabra
+   0319 20 B9         [ 3]  166 	bra lcn_lectura
+   031B                     167 lcn_convierte:
+                            168 
+   031B 36 04         [ 6]  169 	pshu b				;Lo metemos en la pila para no perder el valor.
+   031D C6 08         [ 2]  170 	ldb #8				;El cursor apunta al anterior.
+   031F F7 FF 00      [ 5]  171 	stb pantalla
+   0322 37 04         [ 6]  172 	pulu b				;Lo sacamos de la pila
+   0324 C0 20         [ 2]  173 	subb #32			;Le resta 32 al ascii cargado en b
+   0326 F7 FF 00      [ 5]  174 	stb pantalla			;Saca por pantalla y sigue
+   0329 20 DC         [ 3]  175 	bra sig
+                            176 	
+   032B                     177 lcn_limpia:
+   032B C6 08         [ 2]  178 	ldb #8
+   032D F7 FF 00      [ 5]  179 	stb pantalla
+   0330 20 A2         [ 3]  180 	bra lcn_lectura
+   0332                     181 lcn_finlectura:
+   0332 6F 82         [ 8]  182 	clr ,-x			;Borra la posicion siguiente 
+   0334 20 02         [ 3]  183 	bra lcn_retorno
+                            184 
+   0336                     185 lcn_finlecturan:
+   0336 6F 84         [ 6]  186 	clr ,x
+                            187 
+   0338                     188 lcn_retorno:
 ASxxxx Assembler V05.00  (Motorola 6809), page 5.
 Hexidecimal [16-Bits]
 
 
 
-   02E3 A6 80         [ 6]  215 	lda ,x+ ;Avanzamos a hasta q lleguemos al \n
-   02E5 10 8E 01 C9   [ 4]  216 	ldy #palabra ;Reiniciamos y
-   02E9 81 0A         [ 2]  217 	cmpa #'\n ;SI es igual, volvemos al bucle de comprobar los caracteres
-   02EB 27 EC         [ 3]  218 	beq sig_palabra
-   02ED 81 00         [ 2]  219 	cmpa #'\0
-   02EF 27 03         [ 3]  220 	beq comprueba_final_m
-   02F1 20 F0         [ 3]  221 	bra avanza_palabra
-   02F3                     222 comprueba_final_b:
-                            223 	;jsr juego
-   02F3 39            [ 5]  224 	rts
-   02F4                     225 comprueba_final_m:
-   02F4 8E 01 D5      [ 3]  226 	ldx #palabra_mal
-   02F7 BD 02 28      [ 8]  227 	jsr imprime_cadena
-   02FA BD 01 87      [ 8]  228 	jsr pedir_palabra
-   02FD 39            [ 5]  229 	rts
-                            230 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-                            231 ;										;
-                            232 ;										;
-                            233 ;			Lógica del Juego					;
-                            234 ;										;
-                            235 ;	Tenemos un tablero, que en la primera iteracion va a estar vacio	;
-                            236 ; 	y vamos a ir guardando cada palabra en una variable, le aplicamos	;
-                            237 ;	la logica para los colores, y luego mediante un bucle, vamos sacando	;
-                            238 ;	cada fila (cada palabra) ya con los colores				;
-                            239 ;										;
-                            240 ;										;
-                            241 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-                            242 ;		0-Verde 1-Amarillo 2-Rojo 3-Blanco				;
-                            243 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-                            244 ;Palabra 1
-   02FE                     245 lpi:
-   02FE 20 35         [ 3]  246 	bra imprime_inicio
-   0300                     247 lp_carga:
-   0300 10 8E 01 CF   [ 4]  248 	ldy #palabra_s
-   0304 8E 02 00      [ 3]  249 	ldx #palabra1
-   0307                     250 logica_principal:
-   0307 A6 80         [ 6]  251 	lda ,x+
-   0309 81 00         [ 2]  252 	cmpa #'\0
-   030B 27 27         [ 3]  253 	beq lp_fin
-   030D A1 A0         [ 6]  254 	cmpa ,y+	
-   030F 27 02         [ 3]  255 	beq lp_bien
-   0311 26 06         [ 3]  256 	bne lp_comp
-   0313                     257 lp_bien:
-   0313 BD 02 28      [ 8]  258 	jsr imprime_cadena
-   0316 B7 FF 00      [ 5]  259 	sta pantalla
-   0319                     260 lp_comp:
-   0319 A1 A0         [ 6]  261 	cmpa ,y+
-   031B 27 08         [ 3]  262 	beq lp_estan
-   031D 10 8C 00 00   [ 5]  263 	cmpy #'\0
-   0321 27 0A         [ 3]  264 	beq lp_mal
-   0323 20 F4         [ 3]  265 	bra lp_comp
-   0325                     266 lp_estan:
-   0325 8E 00 3F      [ 3]  267 	ldx #'?
-   0328 BD 02 28      [ 8]  268 	jsr imprime_cadena
-   032B 20 D3         [ 3]  269 	bra lp_carga
+   0338 35 04         [ 6]  189 	puls b
+   033A 39            [ 5]  190 	rts
+                            191 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                            192 ;      Generador Palabra		   ;
+                            193 ; Cargamos la pila y cargamos d con palabras
+                            194 ; metes d dentro de la pila para q el primer caracter
+                            195 ;entre en la pila, añades 1 para q vaya metiendo;
+                            196 ;					    
+                            197 					   
+                            198 					    ;
+                            199 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                            200 
+   033B                     201 generar:
+   033B 10 FE F0 00   [ 7]  202 	lds ps
+   033F CC 04 1A      [ 3]  203 	ldd #palabras
+   0342 34 06         [ 7]  204 	pshs d
+   0344 C3 00 01      [ 4]  205 	addd #1
+   0347 10 83 00 0A   [ 5]  206 	cmpd #'\n
+   034B 27 02         [ 3]  207 	beq g_acabar
+   034D 20 EC         [ 3]  208 	bra generar
+   034F                     209 g_acabar: 
+   034F 39            [ 5]  210 	rts
+                            211 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                            212 ;				Comprueba palabra				;
+                            213 ;										;
+                            214 ;   Subrutina: Comprueba palabra diccionario					;
+                            215 ;   										;
+                            216 ;   Funcionamiento: Comprueba si la palabra introducida por el usuario	;
+                            217 ;   se encuentra en el diccionario o no					;
+                            218 ;										;  
+                            219 ;   Registros Afectados: X,Y y CC						;
+                            220 ;  										;
+                            221 ;   										;
+                            222 ;										;
+                            223 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                            224 
+                            225 
+   0350                     226 comprueba:
+   0350 8E 04 1A      [ 3]  227 	ldx #palabras ;Cargamos en X la direccion donde estan las palabras
+   0353 10 8E 01 9F   [ 4]  228 	ldy #palabra
+   0357                     229 sig_palabra:
+   0357 A6 80         [ 6]  230 	lda ,x+ ; Cargamos en a el siguiente caracter de x
+   0359 A1 A0         [ 6]  231 	cmpa ,y+ ;Comparamos a con el siguiente caracter de y
+   035B 27 FA         [ 3]  232 	beq sig_palabra; Si es igual, que vuelva a hacer lo mismo.
+   035D 81 0A         [ 2]  233 	cmpa #'\n 
+   035F 27 10         [ 3]  234 	beq comprueba_final_b ; Llamamos a comprueba_final_b e indicamos q la palabra esta en el diccionario.
+   0361                     235 avanza_palabra:
+   0361 A6 80         [ 6]  236 	lda ,x+ ;Avanzamos a hasta q lleguemos al \n
+   0363 10 8E 01 9F   [ 4]  237 	ldy #palabra ;Reiniciamos y
+   0367 81 0A         [ 2]  238 	cmpa #'\n ;SI es igual, volvemos al bucle de comprobar los caracteres
+   0369 27 EC         [ 3]  239 	beq sig_palabra
+   036B 81 00         [ 2]  240 	cmpa #'\0
+   036D 27 03         [ 3]  241 	beq comprueba_final_m
+   036F 20 F0         [ 3]  242 	bra avanza_palabra
+   0371                     243 comprueba_final_b:
 ASxxxx Assembler V05.00  (Motorola 6809), page 6.
 Hexidecimal [16-Bits]
 
 
 
-   032D                     270 lp_mal:
-   032D 86 FE         [ 2]  271 	lda #espacio
-   032F B7 FF 00      [ 5]  272 	sta pantalla
-   0332 20 CC         [ 3]  273 	bra lp_carga 
-   0334                     274 lp_fin:
-   0334 39            [ 5]  275 	rts
-   0335                     276 imprime_inicio:
-   0335 86 01         [ 2]  277 	lda #1
-   0337 B7 FF 00      [ 5]  278 	sta pantalla
-   033A 8E 02 24      [ 3]  279 	ldx #barra
-   033D BD 02 28      [ 8]  280 	jsr imprime_cadena
-   0340 20 BE         [ 3]  281 	bra lp_carga
-                            282 ;Palabra 2
-   0342                     283 lpi2:
-   0342 20 F1         [ 3]  284 	bra imprime_inicio
-   0344                     285 lp_carga2:
-   0344 10 8E 01 CF   [ 4]  286 	ldy #palabra_s
-   0348 8E 02 06      [ 3]  287 	ldx #palabra2
-   034B                     288 logica_principal2:
-   034B A6 80         [ 6]  289 	lda ,x+
-   034D 81 00         [ 2]  290 	cmpa #'\0
-   034F 27 27         [ 3]  291 	beq lp_fin2
-   0351 A1 A0         [ 6]  292 	cmpa ,y+	
-   0353 27 02         [ 3]  293 	beq lp_bien2
-   0355 26 06         [ 3]  294 	bne lp_comp2
-   0357                     295 lp_bien2:
-   0357 BD 02 28      [ 8]  296 	jsr imprime_cadena
-   035A B7 FF 00      [ 5]  297 	sta pantalla
-   035D                     298 lp_comp2:
-   035D A1 A0         [ 6]  299 	cmpa ,y+
-   035F 27 08         [ 3]  300 	beq lp_estan2
-   0361 10 8C 00 00   [ 5]  301 	cmpy #'\0
-   0365 27 0A         [ 3]  302 	beq lp_mal2
-   0367 20 F4         [ 3]  303 	bra lp_comp2
-   0369                     304 lp_estan2:
-   0369 8E 00 3F      [ 3]  305 	ldx #'?
-   036C BD 02 28      [ 8]  306 	jsr imprime_cadena
-   036F 20 D3         [ 3]  307 	bra lp_carga2
-   0371                     308 lp_mal2:
-   0371 86 FE         [ 2]  309 	lda #espacio
-   0373 B7 FF 00      [ 5]  310 	sta pantalla
-   0376 20 CC         [ 3]  311 	bra lp_carga2 
-   0378                     312 lp_fin2:
-   0378 39            [ 5]  313 	rts
-   0379                     314 imprime_inicio2:
-   0379 86 02         [ 2]  315 	lda #2
-   037B B7 FF 00      [ 5]  316 	sta pantalla
-   037E 8E 02 24      [ 3]  317 	ldx #barra
-   0381 BD 02 28      [ 8]  318 	jsr imprime_cadena
-   0384 20 BE         [ 3]  319 	bra lp_carga2
-                            320 ;Palabra 3
-   0386                     321 lpi3:
-   0386 20 35         [ 3]  322 	bra imprime_inicio3
-   0388                     323 lp_carga3:
-   0388 10 8E 01 CF   [ 4]  324 	ldy #palabra_s
+                            244 	;ldx #palabra_bien
+                            245 	;jsr imprime_cadena
+   0371 39            [ 5]  246 	rts
+   0372                     247 comprueba_final_m:
+   0372 8E 01 AB      [ 3]  248 	ldx #palabra_mal
+   0375 BD 02 91      [ 8]  249 	jsr imprime_cadena
+   0378 BD 01 87      [ 8]  250 	jsr pedir_palabra
+   037B 39            [ 5]  251 	rts
+                            252 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                            253 ;										;
+                            254 ;										;
+                            255 ;			Lógica del Juego					;
+                            256 ;										;
+                            257 ;	Tenemos un tablero, que en la primera iteracion va a estar vacio	;
+                            258 ; 	y vamos a ir guardando cada palabra en una variable, le aplicamos	;
+                            259 ;	la logica para los colores, y luego mediante un bucle, vamos sacando	;
+                            260 ;	cada fila (cada palabra) ya con los colores				;
+                            261 ;										;
+                            262 ;										;
+                            263 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                            264 
+                            265 ;Palabra 1
+   037C                     266 inicio:
+   037C C6 0A         [ 2]  267    ldb #'\n
+   037E F7 FF 00      [ 5]  268    stb pantalla
+   0381 F6 01 9E      [ 5]  269    ldb intento_actual
+   0384 CB 31         [ 2]  270    addb #49
+   0386 C1 36         [ 2]  271    cmpb #'6
+   0388 27 56         [ 3]  272    beq mensaje_fallo
+   038A F7 FF 00      [ 5]  273    stb pantalla
+   038D 8E 02 44      [ 3]  274    ldx #barra1
+   0390 BD 02 91      [ 8]  275    jsr imprime_cadena
+   0393 8E 01 9F      [ 3]  276    ldx #palabra  ;Cadena leida
+   0396 10 8E 02 3A   [ 4]  277    ldy #palabra1 ;String Vacia
+   039A                     278 copiar: ;Esta wea copia
+   039A A6 80         [ 6]  279    lda ,x+  ;Carga en a el elemento de x
+   039C A7 A0         [ 6]  280    sta ,y+  ;Almacena en y lo que halla en A
+   039E 81 00         [ 2]  281    cmpa #'\0  ; Lo comparas con el final
+   03A0 27 02         [ 3]  282    beq reiniciar_ptr ;Si es igual, es q la copia ha finalizado y los ptrs se reinician.
+   03A2 20 F6         [ 3]  283    bra copiar ;Sino, q siga copiando
+   03A4                     284 reiniciar_ptr:
+   03A4 8E 01 A5      [ 3]  285 	ldx #palabra_s
+   03A7 10 8E 02 3A   [ 4]  286 	ldy #palabra1
+   03AB                     287 comparaciones:
+   03AB A6 80         [ 6]  288 	lda ,x+ ;Compara                     
+   03AD 81 00         [ 2]  289 	cmpa #'\0
+   03AF 27 25         [ 3]  290 	beq final_w1
+   03B1 A1 A0         [ 6]  291 	cmpa ,y+
+   03B3 27 02         [ 3]  292 	beq pos_correcta
+   03B5 26 05         [ 3]  293 	bne otra_pos
+   03B7                     294 pos_correcta:
+   03B7 B7 FF 00      [ 5]  295 	sta pantalla
+   03BA 20 EF         [ 3]  296 	bra comparaciones
+   03BC                     297 otra_pos:
+   03BC A1 A0         [ 6]  298 	cmpa ,y+
 ASxxxx Assembler V05.00  (Motorola 6809), page 7.
 Hexidecimal [16-Bits]
 
 
 
-   038C 8E 02 0C      [ 3]  325 	ldx #palabra3
-   038F                     326 logica_principal3:
-   038F A6 80         [ 6]  327 	lda ,x+
-   0391 81 00         [ 2]  328 	cmpa #'\0
-   0393 27 27         [ 3]  329 	beq lp_fin3
-   0395 A1 A0         [ 6]  330 	cmpa ,y+	
-   0397 27 02         [ 3]  331 	beq lp_bien3
-   0399 26 06         [ 3]  332 	bne lp_comp3
-   039B                     333 lp_bien3:
-   039B BD 02 28      [ 8]  334 	jsr imprime_cadena
-   039E B7 FF 00      [ 5]  335 	sta pantalla
-   03A1                     336 lp_comp3:
-   03A1 A1 A0         [ 6]  337 	cmpa ,y+
-   03A3 27 08         [ 3]  338 	beq lp_estan3
-   03A5 10 8C 00 00   [ 5]  339 	cmpy #'\0
-   03A9 27 0A         [ 3]  340 	beq lp_mal3
-   03AB 20 F4         [ 3]  341 	bra lp_comp3
-   03AD                     342 lp_estan3:
-   03AD 8E 00 3F      [ 3]  343 	ldx #'?
-   03B0 BD 02 28      [ 8]  344 	jsr imprime_cadena
-   03B3 20 D3         [ 3]  345 	bra lp_carga3
-   03B5                     346 lp_mal3:
-   03B5 86 FE         [ 2]  347 	lda #espacio
-   03B7 B7 FF 00      [ 5]  348 	sta pantalla
-   03BA 20 CC         [ 3]  349 	bra lp_carga3 
-   03BC                     350 lp_fin3:
-   03BC 39            [ 5]  351 	rts
-   03BD                     352 imprime_inicio3:
-   03BD 86 03         [ 2]  353 	lda #3
-   03BF B7 FF 00      [ 5]  354 	sta pantalla
-   03C2 8E 02 24      [ 3]  355 	ldx #barra
-   03C5 BD 02 28      [ 8]  356 	jsr imprime_cadena
-   03C8 20 BE         [ 3]  357 	bra lp_carga3
-                            358 ;Palabra 4
-   03CA                     359 lpi4:
-   03CA 20 35         [ 3]  360 	bra imprime_inicio4
-   03CC                     361 lp_carga4:
-   03CC 10 8E 01 CF   [ 4]  362 	ldy #palabra_s
-   03D0 8E 02 12      [ 3]  363 	ldx #palabra4
-   03D3                     364 logica_principal4:
-   03D3 A6 80         [ 6]  365 	lda ,x+
-   03D5 81 00         [ 2]  366 	cmpa #'\0
-   03D7 27 27         [ 3]  367 	beq lp_fin4
-   03D9 A1 A0         [ 6]  368 	cmpa ,y+	
-   03DB 27 02         [ 3]  369 	beq lp_bien4
-   03DD 26 06         [ 3]  370 	bne lp_comp4
-   03DF                     371 lp_bien4:
-   03DF BD 02 28      [ 8]  372 	jsr imprime_cadena
-   03E2 B7 FF 00      [ 5]  373 	sta pantalla
-   03E5                     374 lp_comp4:
-   03E5 A1 A0         [ 6]  375 	cmpa ,y+
-   03E7 27 08         [ 3]  376 	beq lp_estan4
-   03E9 10 8C 00 00   [ 5]  377 	cmpy #'\0
-   03ED 27 0A         [ 3]  378 	beq lp_mal4
-   03EF 20 F4         [ 3]  379 	bra lp_comp4
+   03BE 27 06         [ 3]  299 	beq  escribe_otra_pos
+   03C0 81 00         [ 2]  300 	cmpa #'\0
+   03C2 27 0A         [ 3]  301 	beq  no_esta
+   03C4 20 F6         [ 3]  302 	bra otra_pos
+   03C6                     303 escribe_otra_pos:
+   03C6 F6 02 2C      [ 5]  304 	ldb interrog
+   03C9 F7 FF 00      [ 5]  305 	stb pantalla
+   03CC 20 DD         [ 3]  306 	bra comparaciones
+   03CE                     307 no_esta:
+   03CE F6 02 2B      [ 5]  308 	ldb espacio
+   03D1 F7 FF 00      [ 5]  309 	stb pantalla
+   03D4 20 D5         [ 3]  310 	bra comparaciones
+   03D6                     311 final_w1:
+   03D6 8E 02 40      [ 3]  312 	ldx #barra
+   03D9 BD 02 91      [ 8]  313 	jsr imprime_cadena
+   03DC 7C 01 9E      [ 7]  314 	inc intento_actual
+   03DF 39            [ 5]  315 	rts
+   03E0                     316 mensaje_fallo:
+   03E0 8E 02 2D      [ 3]  317 	ldx #mensaje_falloo
+   03E3 BD 02 91      [ 8]  318 	jsr imprime_cadena
+   03E6 20 00         [ 3]  319 	bra elegir
+   03E8                     320 elegir:
+   03E8 8E 03 E8      [ 3]  321 	ldx #elegir
+   03EB BD 02 91      [ 8]  322 	jsr imprime_cadena
+   03EE F6 FF 02      [ 5]  323 	ldb teclado
+   03F1 C1 6D         [ 2]  324 	cmpb #'m
+   03F3 7E 02 FA      [ 4]  325 	jmp salta
+   03F6 C1 72         [ 2]  326 	cmpb #'r
+   03F8 7E 02 FE      [ 4]  327 	jmp reinicia
+   03FB 20 EB         [ 3]  328 	bra elegir
 ASxxxx Assembler V05.00  (Motorola 6809), page 8.
-Hexidecimal [16-Bits]
-
-
-
-   03F1                     380 lp_estan4:
-   03F1 8E 00 3F      [ 3]  381 	ldx #'?
-   03F4 BD 02 28      [ 8]  382 	jsr imprime_cadena
-   03F7 20 D3         [ 3]  383 	bra lp_carga4
-   03F9                     384 lp_mal4:
-   03F9 86 FE         [ 2]  385 	lda #espacio
-   03FB B7 FF 00      [ 5]  386 	sta pantalla
-   03FE 20 CC         [ 3]  387 	bra lp_carga4
-   0400                     388 lp_fin4:
-   0400 39            [ 5]  389 	rts
-   0401                     390 imprime_inicio4:
-   0401 86 04         [ 2]  391 	lda #4
-   0403 B7 FF 00      [ 5]  392 	sta pantalla
-   0406 8E 02 24      [ 3]  393 	ldx #barra
-   0409 BD 02 28      [ 8]  394 	jsr imprime_cadena
-   040C 20 BE         [ 3]  395 	bra lp_carga4
-                            396 ;Palabra 5
-   040E                     397 lpi5:
-   040E 20 35         [ 3]  398 	bra imprime_inicio5
-   0410                     399 lp_carga5:
-   0410 10 8E 01 CF   [ 4]  400 	ldy #palabra_s
-   0414 8E 02 18      [ 3]  401 	ldx #palabra5
-   0417                     402 logica_principal5:
-   0417 A6 80         [ 6]  403 	lda ,x+
-   0419 81 00         [ 2]  404 	cmpa #'\0
-   041B 27 27         [ 3]  405 	beq lp_fin5
-   041D A1 A0         [ 6]  406 	cmpa ,y+	
-   041F 27 02         [ 3]  407 	beq lp_bien5
-   0421 26 06         [ 3]  408 	bne lp_comp5
-   0423                     409 lp_bien5:
-   0423 BD 02 28      [ 8]  410 	jsr imprime_cadena
-   0426 B7 FF 00      [ 5]  411 	sta pantalla
-   0429                     412 lp_comp5:
-   0429 A1 A0         [ 6]  413 	cmpa ,y+
-   042B 27 08         [ 3]  414 	beq lp_estan5
-   042D 10 8C 00 00   [ 5]  415 	cmpy #'\0
-   0431 27 0A         [ 3]  416 	beq lp_mal5
-   0433 20 F4         [ 3]  417 	bra lp_comp5
-   0435                     418 lp_estan5:
-   0435 8E 00 3F      [ 3]  419 	ldx #'?
-   0438 BD 02 28      [ 8]  420 	jsr imprime_cadena
-   043B 20 D3         [ 3]  421 	bra lp_carga5
-   043D                     422 lp_mal5:
-   043D 86 FE         [ 2]  423 	lda #espacio
-   043F B7 FF 00      [ 5]  424 	sta pantalla
-   0442 20 CC         [ 3]  425 	bra lp_carga5 
-   0444                     426 lp_fin5:
-   0444 39            [ 5]  427 	rts
-   0445                     428 imprime_inicio5:
-   0445 86 05         [ 2]  429 	lda #5
-   0447 B7 FF 00      [ 5]  430 	sta pantalla
-   044A 8E 02 24      [ 3]  431 	ldx #barra
-   044D BD 02 28      [ 8]  432 	jsr imprime_cadena
-   0450 20 BE         [ 3]  433 	bra lp_carga5
-                            434 ;Palabra 6
-ASxxxx Assembler V05.00  (Motorola 6809), page 9.
-Hexidecimal [16-Bits]
-
-
-
-   0452                     435 lpi6:
-   0452 20 35         [ 3]  436 	bra imprime_inicio6
-   0454                     437 lp_carga6:
-   0454 10 8E 01 CF   [ 4]  438 	ldy #palabra_s
-   0458 8E 02 1E      [ 3]  439 	ldx #palabra6
-   045B                     440 logica_principal6:
-   045B A6 80         [ 6]  441 	lda ,x+
-   045D 81 00         [ 2]  442 	cmpa #'\0
-   045F 27 27         [ 3]  443 	beq lp_fin6
-   0461 A1 A0         [ 6]  444 	cmpa ,y+	
-   0463 27 02         [ 3]  445 	beq lp_bien6
-   0465 26 06         [ 3]  446 	bne lp_comp6
-   0467                     447 lp_bien6:
-   0467 BD 02 28      [ 8]  448 	jsr imprime_cadena
-   046A B7 FF 00      [ 5]  449 	sta pantalla
-   046D                     450 lp_comp6:
-   046D A1 A0         [ 6]  451 	cmpa ,y+
-   046F 27 08         [ 3]  452 	beq lp_estan6
-   0471 10 8C 00 00   [ 5]  453 	cmpy #'\0
-   0475 27 0A         [ 3]  454 	beq lp_mal6
-   0477 20 F4         [ 3]  455 	bra lp_comp6
-   0479                     456 lp_estan6:
-   0479 8E 00 3F      [ 3]  457 	ldx #'?
-   047C BD 02 28      [ 8]  458 	jsr imprime_cadena
-   047F 20 D3         [ 3]  459 	bra lp_carga6
-   0481                     460 lp_mal6:
-   0481 86 FE         [ 2]  461 	lda #espacio
-   0483 B7 FF 00      [ 5]  462 	sta pantalla
-   0486 20 CC         [ 3]  463 	bra lp_carga6 
-   0488                     464 lp_fin6:
-   0488 39            [ 5]  465 	rts
-   0489                     466 imprime_inicio6:
-   0489 86 06         [ 2]  467 	lda #6
-   048B B7 FF 00      [ 5]  468 	sta pantalla
-   048E 8E 02 24      [ 3]  469 	ldx #barra
-   0491 BD 02 28      [ 8]  470 	jsr imprime_cadena
-   0494 20 BE         [ 3]  471 	bra lp_carga6
-ASxxxx Assembler V05.00  (Motorola 6809), page 10.
 Hexidecimal [16-Bits]
 
 Symbol Table
 
     .__.$$$.       =   2710 L   |     .__.ABS.       =   0000 G
     .__.CPU.       =   0000 L   |     .__.H$L.       =   0001 L
-  0 avanza_palabra     011A R   |   0 barra              005B R
-  0 booleano           0034 R   |   0 comprueba          0109 GR
-  0 comprueba_fina     012A R   |   0 comprueba_fina     012B R
-  0 contador           006D GR  |   0 convertir          0084 GR
-  0 espacio            0035 R   |     fin            =   FF01 
-  0 g_acabar           0108 R   |   0 generar            00F4 R
-  0 ic_sgte            0061 R   |   0 imprime_cadena     005F GR
-  0 imprime_inicio     016C R   |   0 imprime_inicio     01B0 R
-  0 imprime_inicio     01F4 R   |   0 imprime_inicio     0238 R
-  0 imprime_inicio     027C R   |   0 imprime_inicio     02C0 R
-  0 incrementa_a       008A GR  |   0 incrementa_b       0072 R
-  0 incrementa_con     0075 R   |   0 lcn_convierte      00D4 R
-  0 lcn_finlectura     00EB R   |   0 lcn_finlectura     00EF R
-  0 lcn_lectura        00A2 R   |   0 lcn_limpia         00E4 R
-  0 lcn_max            0094 R   |   0 lcn_retorno        00F1 R
-  0 lee_cadena_n       0095 GR  |   0 logica_princip     013E R
-  0 logica_princip     0182 R   |   0 logica_princip     01C6 R
-  0 logica_princip     020A R   |   0 logica_princip     024E R
-  0 logica_princip     0292 R   |   0 lp_bien            014A R
-  0 lp_bien2           018E R   |   0 lp_bien3           01D2 R
-  0 lp_bien4           0216 R   |   0 lp_bien5           025A R
-  0 lp_bien6           029E R   |   0 lp_carga           0137 R
-  0 lp_carga2          017B R   |   0 lp_carga3          01BF R
-  0 lp_carga4          0203 R   |   0 lp_carga5          0247 R
-  0 lp_carga6          028B R   |   0 lp_comp            0150 R
-  0 lp_comp2           0194 R   |   0 lp_comp3           01D8 R
-  0 lp_comp4           021C R   |   0 lp_comp5           0260 R
-  0 lp_comp6           02A4 R   |   0 lp_estan           015C R
-  0 lp_estan2          01A0 R   |   0 lp_estan3          01E4 R
-  0 lp_estan4          0228 R   |   0 lp_estan5          026C R
-  0 lp_estan6          02B0 R   |   0 lp_fin             016B R
-  0 lp_fin2            01AF R   |   0 lp_fin3            01F3 R
-  0 lp_fin4            0237 R   |   0 lp_fin5            027B R
-  0 lp_fin6            02BF R   |   0 lp_mal             0164 R
-  0 lp_mal2            01A8 R   |   0 lp_mal3            01EC R
-  0 lp_mal4            0230 R   |   0 lp_mal5            0274 R
-  0 lp_mal6            02B8 R   |   0 lpi                0135 GR
-  0 lpi2               0179 GR  |   0 lpi3               01BD GR
-  0 lpi4               0201 GR  |   0 lpi5               0245 GR
-  0 lpi6               0289 GR  |   0 palabra            0000 R
-  0 palabra1           0037 R   |   0 palabra2           003D R
-  0 palabra3           0043 R   |   0 palabra4           0049 R
-  0 palabra5           004F R   |   0 palabra6           0055 R
-  0 palabra_mal        000C R   |   0 palabra_s          0006 R
-    palabras           **** GX  |     pantalla       =   FF00 
-    pedir_palabra      **** GX  |     ps             =   F000 
-    pu             =   E000     |   0 quita_anterior     00C9 R
-  0 ret_imprime_ca     006A R   |   0 retorno_contad     0081 R
-  0 salir_bucle        008F GR  |   0 sig                00C0 R
-  0 sig_palabra        0110 R   |     teclado        =   FF02 
+    acabar             **** GX  |   0 avanza_palabra     01C3 R
+  0 barra              00A2 R   |   0 barra1             00A6 R
+  0 booleano           005A R   |   0 comparaciones      020D R
+  0 comprueba          01B2 GR  |   0 comprueba_fina     01D3 R
+  0 comprueba_fina     01D4 R   |   0 contador           0101 GR
+  0 convertir          0118 GR  |   0 copiar             01FC R
+  0 elegir             024A R   |   0 escribe_otra_p     0228 R
+  0 espacio            008D R   |     fin            =   FF01 
+  0 final_w1           0238 R   |   0 g_acabar           01B1 R
+  0 generar            019D R   |   0 ic_sgte            00F5 R
+  0 imprime_cadena     00F3 GR  |   0 incrementa_a       011E GR
+  0 incrementa_b       0106 R   |   0 incrementa_con     0109 R
+  0 inicio             01DE GR  |   0 intento_actual     0000 R
+  0 interrog           008E R   |     juego              **** GX
+  0 lcn_convierte      017D R   |   0 lcn_finlectura     0194 R
+  0 lcn_finlectura     0198 R   |   0 lcn_lectura        0136 R
+  0 lcn_limpia         018D R   |   0 lcn_max            0128 R
+  0 lcn_retorno        019A R   |   0 lee_cadena_n       0129 GR
+  0 mensaje_fallo      0242 R   |   0 mensaje_falloo     008F R
+  0 mensaje_vuelta     00AD R   |   0 menujogo           00AE R
+  0 no_esta            0230 R   |   0 otra_pos           021E R
+  0 palabra            0001 R   |   0 palabra1           009C R
+  0 palabra_bien       0035 R   |   0 palabra_mal        000D R
+  0 palabra_s          0007 R   |     palabras           **** GX
+    pantalla       =   FF00     |     pedir_palabra      **** GX
+  0 pos_correcta       0219 R   |     ps             =   F000 
+    pu             =   E000     |   0 quita_anterior     0172 R
+  0 reinicia           0160 R   |   0 reiniciar_ptr      0206 R
+  0 ret_imprime_ca     00FE R   |   0 retorno_contad     0115 R
+  0 salir_bucle        0123 GR  |   0 salta              015C R
+  0 seleccionar        005B R   |   0 sig                0169 R
+  0 sig_palabra        01B9 R   |     teclado        =   FF02 
+    wordle             **** GX
 
-ASxxxx Assembler V05.00  (Motorola 6809), page 11.
+ASxxxx Assembler V05.00  (Motorola 6809), page 9.
 Hexidecimal [16-Bits]
 
 Area Table
 
 [_CSEG]
-   0 _CODE            size  2CD   flags C180
+   0 _CODE            size  25F   flags C180
 [_DSEG]
    1 _DATA            size    0   flags C0C0
 
