@@ -23,10 +23,10 @@ menu:
 	.asciz "\nIntroduzca una opcion: "
 menujogo:
 	.ascii "\33[2J\33[H" ;Limpia la pantalla y pone el cursor arriba.
-	.ascii "\n     | JUEGO |\n"
-	.ascii "--------------\n"
-	.ascii "     | 12345 |\n"
-	.asciz "--------------\n"
+	.ascii "\n     | BIEN  | ESTAN | \n"
+	.ascii "----------------------\n"
+	.ascii "     | 12345 | 12345 | \n"
+	.asciz "----------------------"
 int_palabra:
 	.asciz "\nIntroduzca la palabra: "
 
@@ -45,9 +45,13 @@ err:
 			.globl inicio
 			.globl juego
 			.globl acabar
+			.globl mensaje_fallo
+			.globl inicio2
+			.globl inicio_genera
 wordle:
 	lds #ps
 	ldu #pu
+	jsr inicio_genera
 	ldx #menu
 	jsr imprime_cadena		
 
@@ -79,13 +83,20 @@ juego:
 	jsr imprime_cadena
 	jsr pedir_palabra
 pedir_palabra:
+	cmpb #'6
+	beq intentos_acabados
 	ldx #int_palabra
 	jsr imprime_cadena
+lee_cadena:
 	lda #6	;Numero maximo de caracteres q pueden introducir(n-1)
 	jsr lee_cadena_n
 	jsr comprueba
 	jsr inicio
-	bra pedir_palabra
+	jsr inicio2
+	bra lee_cadena
+
+intentos_acabados:
+	jsr mensaje_fallo
 acabar:
 	clra
 	sta fin

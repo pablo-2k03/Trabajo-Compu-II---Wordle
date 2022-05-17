@@ -8,17 +8,19 @@ ps		.equ 0xF000
 intento_actual: .byte 0
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 palabra: 	.asciz '     '
-palabra_s: 	.asciz "MOSCA"	
+
+num_palabra: 	.byte 0
+palabra_s: 	.asciz "     "	
 palabra_mal:	.asciz "\nLa palabra NO esta en el diccionario.\n"
 palabra_bien:   .asciz "\nLa palabra esta en el diccionario.\n"
 contador_bien:	.byte 0
-
+total_palabras: 	.byte 0
 seleccionar: 	.asciz "\nPulse m para volver al menu y r para reiniciar.\n"
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 espacio: 	.byte 32
 interrog: 	.byte 63
 cad_acierto: 	.asciz "\nENHORABUENA! Acertaste la palabra.\n"
-mensaje_falloo:  .asciz  "Se te acabaron los intentos!\n" 
+mensaje_falloo:  .asciz  "\n\nSe te acabaron los intentos!\n" 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;Variables para guardar cada intento de la palabra
 palabra1:  	.asciz "     "
@@ -40,9 +42,12 @@ mensaje_vuelta: .asciz ""
 	.globl wordle
 	.globl juego
 	.globl acabar
+	.globl mensaje_fallo
+	.globl inicio2
+	.globl inicio_genera
 menujogo:
 	.ascii "\33[2J\33[H" ;Limpia la pantalla y pone el cursor arriba.
-	.ascii "\n     | JUEGO |\n"
+	.ascii "\n     | BIEN | ESTAN |\n"
 	.ascii "--------------\n"
 	.ascii "     | 12345 |\n"
 	.asciz "--------------\n"
@@ -83,6 +88,7 @@ incrementa_contador:
 	beq incrementa_b
 	bra incrementa_contador
 retorno_contador:
+	stb total_palabras
 	pulu a,x
 	rts
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -151,7 +157,8 @@ salta:
     rts
 reinicia:
     ldb #0			;Reiniciamos el contador de los intentos
-    stb intento_actual		;Lo guardamos en los intentos
+    stb intento_actual	
+    jsr inicio_genera	;Lo guardamos en los intentos
     jsr juego			;Reiniciamos juego
     rts
 sig:
@@ -191,26 +198,42 @@ lcn_finlecturan:
 lcn_retorno:
 	puls b
 	rts
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;      Generador Palabra		   ;
-; Cargamos la pila y cargamos d con palabras
-; metes d dentro de la pila para q el primer caracter
-;entre en la pila, añades 1 para q vaya metiendo;
-;					    
-					   
-					    ;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-generar:
-	lds ps
-	ldd #palabras
-	pshs d
-	addd #1
-	cmpd #'\n
-	beq g_acabar
-	bra generar
-g_acabar: 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;      Generador Palabra		   		;
+; Cargamos la pila y cargamos d con palabras		;
+; metes d dentro de la pila para q el primer caracter   ;
+;entre en la pila, añades 1 para q vaya metiendo        ;
+;					    		;			   
+;					    	        ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+inicio_genera:
+	ldy #palabras
+	clrb
+generar_palabra:
+	cmpb num_palabra
+	beq incrementa
+	incb
+	leay 6,y
+	bra generar_palabra
+incrementa:
+	inc num_palabra
+	lda num_palabra
+	cmpa total_palabras
+	beq reinicia_numpalabra
+	bra reinicia_x
+reinicia_numpalabra:
+	clr num_palabra
+reinicia_x:
+	ldx #palabra_s
+bucle:
+	lda ,y+
+	cmpa #'\n
+	beq fingenera
+	sta ,x+
+	bra bucle
+fingenera:
 	rts
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;				Comprueba palabra				;
 ;										;
@@ -244,8 +267,6 @@ avanza_palabra:
 	beq comprueba_final_m
 	bra avanza_palabra
 comprueba_final_b:
-	;ldx #palabra_bien
-	;jsr imprime_cadena
 	rts
 comprueba_final_m:
 	ldx #palabra_mal
@@ -271,14 +292,12 @@ inicio:
    stb pantalla
    ldb intento_actual
    addb #49
-   cmpb #'6
-   beq mensaje_fallo
    stb pantalla
    ldx #barra1
    jsr imprime_cadena
    ldx #palabra  ;Cadena leida
    ldy #palabra1 ;String Vacia
-copiar: ;Esta wea copia
+copiar: 
    lda ,x+  ;Carga en a el elemento de x
    sta ,y+  ;Almacena en y lo que halla en A
    cmpa #'\0  ; Lo comparas con el final
@@ -287,45 +306,63 @@ copiar: ;Esta wea copia
 reiniciar_ptr:
 	ldx #palabra_s
 	ldy #palabra1
-comparaciones:
-	lda ,x+ ;Compara 
-	ldb contador_bien
-	cmpb #5			;Si el contador es 5, quiere decir q tiene 5 letras bien por lo que la palabra es correcta
-	beq acierto                    
+compara:
+   	lda contador_bien
+	cmpa #5
+	beq acierto
+	lda ,y+
 	cmpa #'\0
 	beq final_w1
-	cmpa ,y+
+	cmpa ,x+
 	beq pos_correcta
-	bne otra_pos
-
+	bra no_estan
+inicio2:
+	ldy #palabra1
+	ldx #palabra_s
+segunda_comp:
+	lda ,x+
+	cmpa ,y
+	beq escribe_dif_pos
+	cmpa #'\0
+	beq reinicia_ptr
+	ldb ,y
+	cmpb #'\0
+	beq final_w2
+	bra segunda_comp
+reinicia_ptr:
+	ldx #palabra_s
+	leay 1,y
+	bra segunda_comp
+no_estan:
+	ldb #'X
+	stb pantalla
+	bra compara
+escribe_dif_pos:
+	lda ,y
+	sta pantalla
+	bra segunda_comp
 acierto: 	
 	ldx #barra		;Cuando se acierta la palabra, cargamos la barra externa
 	jsr imprime_cadena	;Imprime
 	ldx #cad_acierto	;Carga cadena mensaje
 	jsr imprime_cadena
-	bra elegir		;Elige
+	bra elegir		
 pos_correcta:
 	sta pantalla
 	inc contador_bien	;Incrementamos un contador para contar las letras bien posicionadas
-	bra comparaciones
-otra_pos:
-	cmpa ,y+
-	beq  escribe_otra_pos
-	cmpa #'\0
-	beq  no_esta
-	bra otra_pos
-escribe_otra_pos:
-	ldb interrog		; El simbolo de la interrog es cuando la letra está en la palabra pero no en la posición correcta
-	stb pantalla
-	bra comparaciones
-no_esta:
-	ldb #espacio
-	stb pantalla
-	bra comparaciones
+	lbra compara
+
 final_w1:
 	ldx #barra
 	jsr imprime_cadena
+	rts
+final_w2:
 	inc intento_actual
+	ldx #barra
+	jsr imprime_cadena
+	ldb intento_actual
+   	cmpb #6
+   	lbeq mensaje_fallo
 	rts
 mensaje_fallo:
 	ldx #mensaje_falloo	;Se acabaron los intentos
