@@ -1,8 +1,7 @@
 			.module wordle
 ;+----------------------------------------------+
-;                      WORDLE  	  	  ;
-; 	¬Pablo Agüera Hernández  		  ;
-; 	¬Eduardo Juanes Ramos    		  ;
+;                      WORDLE  	  	        ;
+; 	    		 		        ;
 ;+----------------------------------------------+
 fin		.equ 0xFF01
 teclado 	.equ 0xFF02
